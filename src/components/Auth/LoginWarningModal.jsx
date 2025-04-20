@@ -208,7 +208,7 @@ export default function LoginWarningModal({ openModal, closeModal }) {
             <div className="rounded-lg w-full h-screen flex items-center justify-center">
               <div className="max-w-xs">
                 <div className="flex items-center justify-center mb-8">
-                  <img src={logo} alt="Logo" className="h-16 w-[250px]" />
+                  <img src={logo} alt="Logo" className="h-60 w-[250px]" />
                 </div>
                 <form className="space-y-4" onSubmit={handleLogin}>
                   <div>
