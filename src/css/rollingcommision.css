@@ -1,0 +1,4 @@
+select:focus {
+    border-color: initial; /* or whatever your default border color is */
+    outline: none; /* Removes the outline when the element is focused */
+  }

@@ -1,0 +1,28 @@
+export const SET_ALL_SPORTS = 'SET_ALL_SPORTS'
+export const GET_ALL_SPORTS = 'GET_ALL_SPORTS'
+
+//get & set tennis league
+export const GET_TENNIS_LEAGUE = 'GET_TENNIS_LEAGUE'
+export const SET_TENNIS_LEAGUE = 'SET_TENNIS_LEAGUE'
+
+//get & set CRICKET league
+export const SET_CRICKET_LEAGUE = 'SET_CRICKET_LEAGUE'
+export const GET_CRICKET_LEAGUE = 'GET_CRICKET_LEAGUE'
+
+
+//get & set CRICKET league
+export const SET_SOCCER_LEAGUE = 'SET_SOCCER_LEAGUE'
+export const GET_SOCCER_LEAGUE = 'GET_SOCCER_LEAGUE'
+
+
+//SET_BET
+export const SET_BET = 'SET_BET'
+
+
+ 
+export const  GET_ERROR = 'GET_ERROR'
+export const GET_LOADING='GET_LOADING'
+
+export const GET_CRICKET_LOADING='GET_CRICKET_LOADING'
+export const GET_SOCCER_LOADING='GET_SOCCER_LOADING'
+export const GET_TENNIS_LOADING='GET_TENNIS_LOADING'

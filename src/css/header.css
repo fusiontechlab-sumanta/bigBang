@@ -1,0 +1,27 @@
+.css-dn6n64-control{
+    min-height: 25px !important;
+}
+.css-w9q2zk-Input2{
+    margin: 0 !important;
+    padding: 0 !important;
+}
+.css-10uquku-control{
+    min-height: 25px !important;
+}
+.css-1xc3v61-indicatorContainer{
+    padding: 0 !important;
+}
+@keyframes viman-change {
+    0% {
+      color: #e40b0b;
+       /* Initial color */
+    }
+   
+    100% {
+      color: #eece1b;
+     /* Final color */
+    }
+  }
+  .vimananimation{
+    animation: viman-change .5s infinite alternate;
+  }

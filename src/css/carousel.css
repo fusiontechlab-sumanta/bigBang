@@ -1,0 +1,30 @@
+
+.games{
+    padding: 5px !important;
+}
+.owl-dots{
+
+    width: 100%;
+    position: absolute;
+    bottom: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+.owl-dot{
+ width: 10px;
+ height: 10px;
+background-color:#757272 !important;
+ border-radius: 50%;
+  
+}
+.active{
+background-color: white !important;
+}
+
+/* Disable dots on mobile devices */
+@media (max-width: 768px) { /* Adjust the max-width as per your requirement */
+    .owl-dots {
+        display: none !important;
+    }
+}

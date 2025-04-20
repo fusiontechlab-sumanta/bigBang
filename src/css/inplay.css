@@ -1,0 +1,50 @@
+@keyframes color-change {
+    0% {
+      color: #e40b0b;
+       /* Initial color */
+    }
+   
+    100% {
+      color: #74d34e;
+     /* Final color */
+    }
+  }
+  
+  /* TailwindCSS Classes */
+  .animate-color-change {
+    animation: color-change .5s infinite alternate; /* Adjust animation duration and timing as needed */
+  }
+  @keyframes viman-change {
+    0% {
+      color: #e40b0b;
+       /* Initial color */
+    }
+   
+    100% {
+      color: #eece1b;
+     /* Final color */
+    }
+  }
+  .vimananimation{
+    animation: viman-change .5s infinite alternate;
+  }
+
+  @keyframes scaleAnimation {
+    0% {
+      transform: scale(1);
+      
+      color: white;
+    }
+    50% {
+      transform: scale(1.2);
+      color: #FFFE27;
+    }
+    100% {
+      color: white;
+      transform: scale(1);
+    }
+  }
+
+  .scale-animate {
+    animation: scaleAnimation 1s infinite;
+  }
