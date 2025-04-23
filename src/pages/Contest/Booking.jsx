@@ -777,9 +777,12 @@ function Booking() {
             if (marketname !== "fancy1") {
                 ({ betData1, betData2, betData3 } = getBetData(previousBet[marketname], showBook, betType));
             }
-            if (marketname === "Fancy") {
+            if (marketname === "FANCY_ODDS") {
+                // console.log(betType, betIndx, lastBetValueFANCY, showBook, type,"OOOOOOOOOO????????????");
+                
                 ({ betData1 } = calculateBetData(betType, betIndx, lastBetValueFANCY, showBook, type));
             }
+
 
 
             // const formattedBetData1 = betData1.toFixed(2);
@@ -3554,8 +3557,9 @@ function Booking() {
 
                                                                 {/* Place Bet Button */}
                                                                 <button
-                                                                    onClick={() => handlePlaceBet("t3", item?.gtype, item?.rname,)}
-                                                                    disabled={item?.gstatus}
+
+                                                                    onClick={() => handlePlaceBet("t3", t3Data?.mname, item?.rname,)}
+                                                                    // disabled={item?.gstatus}
                                                                     className={`flex max-lg:hidden justify-center items-center h-full border rounded-md border-gray-600
                                                                     ${showBook.t3.amount
                                                                             ? 'bg-gradient-to-t from-[#1e714f] to-[#16a34a]'
@@ -3584,8 +3588,8 @@ function Booking() {
 
                                                                 </button>
                                                                 <button
-                                                                    onClick={() => handlePlaceBet("t3", item?.gtype, item?.rname,)}
-                                                                    disabled={item?.gstatus}
+                                                                   onClick={() => handlePlaceBet("t3", t3Data?.mname, item?.rname,)}
+                                                                    // disabled={item?.gstatus}
 
                                                                     className={`flex  justify-center items-center h-full bg-[#577094] border rounded-md border-gray-600
                                                                         ${showBook.t3.amount
