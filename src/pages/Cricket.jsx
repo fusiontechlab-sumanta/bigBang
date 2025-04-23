@@ -26,10 +26,10 @@ function Cricket({ banner }) {
     };
 
     const handleData = (data) => {
-      console.log(data,"===========");
-      
-      if (data?.matches?.length) {
-        setCricketData((prev) => [...prev, ...data.matches]);
+      console.log(data, "===========");
+
+      if (data?.matches?.Cricket?.length) {
+        setCricketData((prev) => [...prev, ...data?.matches?.Cricket]);
       } else {
         setHasMore(false);
       }
@@ -67,7 +67,7 @@ function Cricket({ banner }) {
     return liveEventId && liveEventId?.includes(id);
   }
 
-  // console.log(cricketData,"iiii");
+  console.log(cricketData, "iiii");
 
 
   return (
@@ -112,34 +112,42 @@ function Cricket({ banner }) {
                         {/* Name and Link */}
                         <td className="px-2 py-2 text-nowrap text-center">
                           <Link
-                            to={`/fullmarket/${item?.gameName}/${item.event.id}`}
+                            to={`/fullmarket/Cricket/${item?.matchDetails?.eventId}`}
                             className="flex gap-x-2 flex-wrap text-[#3A8DC5] font-semibold cursor-pointer text-[4vw] lg:text-[12px]">
-                            {item?.event?.name}
-                            {matchLive(item?.event?.id) ? (
+                            {item?.matchDetails?.eventName}
+                            {matchLive(item?.matchDetails?.eventId) ? (
                               <span className="animate-color-change text-gray-400 font-bold text-sm">
                                 In Play
                               </span>
                             )
                               :
                               <span className="text-gray-400 font-normal text-sm">
-                                {formatDateTime(item?.event?.openDate)}
+                                {formatDateTime(item?.matchDetails?.eventTime)}
                               </span>
                             }
+                         
                           </Link>
                         </td>
                         {/* <td className="text-white italic font-semibold text-center">
                         </td> */}
                         {/* Scores */}
                         {/* Score Columns */}
-                        {Array.from({ length: 3 }).map((_, idx) => {
-                          const oddItem = item?.oddFancy?.oddFancy?.t1?.[0]?.[idx]; // Renamed to oddItem
+                        {(item?.oddDatas?.slice(0, 3).concat(Array(3).fill({})).slice(0, 3)).map((oddItem, idx) => {
                           return (
-                            <td key={idx} className="text-black text-[12px] lg:text-[11px] hidden sm:table-cell px-2 py-2 font-[700] text-center">
-                              <span className="px-2 py-1 bg-[#72BBEF]">{oddItem ? oddItem.b1 : "0.0"}</span>
-                              <span className="px-2 py-1 bg-[#FAA9BA]">{oddItem ? oddItem.l1 : "0.0"}</span>
+                            <td
+                              key={idx}
+                              className="text-black text-[12px] lg:text-[11px] hidden sm:table-cell px-2 py-2 font-[700] text-center"
+                            >
+                              <span className="px-2 py-1 bg-[#72BBEF]">
+                                {oddItem?.b1 ?? "0.0"}
+                              </span>
+                              <span className="px-2 py-1 bg-[#FAA9BA]">
+                                {oddItem?.l1 ?? "0.0"}
+                              </span>
                             </td>
                           );
                         })}
+
                         {/* Pin Icon */}
                         <td className="px-2 py-2 text-center">
                           <MdOutlinePushPin className="text-xl border rounded-full border-gray-500 cursor-pointer" />
@@ -156,7 +164,7 @@ function Cricket({ banner }) {
             {/* end footer */}
           </div>
           :
-          <div style={{ "overflow-y": "scroll",  }} className="h-[33vh] md:h-[45vh] border border-b-0">
+          <div style={{ "overflow-y": "scroll", }} className="h-[33vh] md:h-[45vh] border border-b-0">
             {loading ? (
               <SmallLoading />
             ) : cricketData?.length === 0 ? (
@@ -181,45 +189,57 @@ function Cricket({ banner }) {
                       {/* Name and Link */}
                       <td className="relative px-2 py-2 text-center">
                         <Link
-                          to={`/fullmarket/${item?.gameName}/${item.event.id}`}
+                          to={`/fullmarket/Cricket/${item?.matchDetails?.eventId}`}
                           className="flex gap-x-2 flex-wrap text-[#3A8DC5] font-semibold cursor-pointer text-[4vw] lg:text-[12px] max-w-[80vw] lg:max-w-none flex-col items-baseline"
                         >
                           <p className="break-words lg:whitespace-nowrap lg:truncate text-left max-w-full pr-[70px] md:pr-[0] ">
-                            {item?.event?.name}
+                            {item?.matchDetails?.eventName}
                           </p>
-                          {matchLive(item?.event?.id) ? (
+                          {matchLive(item?.matchDetails?.eventId) ? (
                             <span className="animate-color-change text-gray-400 font-bold text-sm">
                               In Play
                             </span>
                           ) : (
                             <span className="text-gray-400 font-normal text-sm break-words">
-                              {formatDateTime(item?.event?.openDate)}
+                              {formatDateTime(item?.matchDetails?.eventTime)}
                             </span>
                           )}
                           <span className="absolute right-0 md:right-[0px] top-1/2 -translate-y-1/2 flex items-center gap-1">
-                            {item?.oddFancy?.oddFancy?.t2?.length > 0 && (
+                            {item?.STATUS?.bookMakerOdds && (
                               <img src={BM} alt="BM" className="w-[33.17px] h-[21px] md:w-[23.95px] md:h-[14px]" />
                             )}
-                            {/* {console.log("t4 length:", item?.oddFancy?.oddFancy?.t4?.length)} */}
-                            {item?.oddFancy?.oddFancy?.t3?.length > 0 && (
-                              <img src={F} alt="F" className="w-[21px] h-[22px] md:w-[16.98px] md:h-[14px]" />
+                            {/* {console.log("t4 length:", item?.STATUS?.fancyOdds === true)} */}
+                            {item?.STATUS?.fancyOdds && (
+                              <img
+                                src={F}
+                                alt="F"
+                                className="w-[21px] h-[22px] md:w-[16.98px] md:h-[14px]"
+                              />
                             )}
-                            {item?.oddFancy?.oddFancy?.t2?.length > 0 &&
+
+
+                            {/* {item?.oddFancy?.oddFancy?.t2?.length > 0 &&
                               item.oddFancy.oddFancy.t2[0].bm1[0].s === "ACTIVE" && (
                                 <img src={S} alt="F" className="w-[21px] h-[22px] md:w-[17.61px] md:h-[14px]" />
-                              )}
+                              )} */}
                             {/* <img src={S} alt="S" className="w-[15px] h-[15px]" /> */}
                           </span>
                         </Link>
                       </td>
                       <td className="text-white italic font-semibold text-center hidden sm:table-cell"></td>
                       {/* Scores */}
-                      {Array.from({ length: 3 }).map((_, idx) => {
-                        const oddItem = item?.oddFancy?.oddFancy?.t1?.[0]?.[idx]; // Renamed to oddItem
+                      {(item?.oddDatas?.slice(0, 3).concat(Array(3).fill({})).slice(0, 3)).map((oddItem, idx) => {
                         return (
-                          <td key={idx} className="text-black text-[12px] lg:text-[11px] hidden sm:table-cell px-2 py-2 font-[700] text-center">
-                            <span className="px-2 py-1 bg-[#72BBEF]">{oddItem ? oddItem.b1 : "0.0"}</span>
-                            <span className="px-2 py-1 bg-[#FAA9BA]">{oddItem ? oddItem.l1 : "0.0"}</span>
+                          <td
+                            key={idx}
+                            className="text-black text-[12px] lg:text-[11px] hidden sm:table-cell px-2 py-2 font-[700] text-center"
+                          >
+                            <span className="px-2 py-1 bg-[#72BBEF]">
+                              {oddItem?.b1 ?? "0.0"}
+                            </span>
+                            <span className="px-2 py-1 bg-[#FAA9BA]">
+                              {oddItem?.l1 ?? "0.0"}
+                            </span>
                           </td>
                         );
                       })}

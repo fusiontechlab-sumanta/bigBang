@@ -49,38 +49,34 @@ function Sports() {
         const handleSeriesData = (data) => {
             setSportList(data);
         };
-        const handleMatchData = (data) => {
-
-            // Create a copy of the existing match data to avoid direct state mutation
+        const handleMatchData = (newData) => {
+            console.log("uuuuu>>>",newData);
+            
             setMatchData((prevData) => {
-                // Create an updated object, using the previous data as a base
                 const updatedData = { ...prevData };
 
-                // Iterate through the incoming data and add/update the key-value pair
-                data.forEach(item => {
-                    const competitionName = item.competition.name;
+                newData.forEach((newItem) => {
+                    const seriesName = newItem.seriesName;
 
-                    // Check if the competition name exists
-                    if (updatedData[competitionName]) {
-                        // Check if the event is already in the list (using event ID as a unique identifier)
-                        const isEventAlreadyAdded = updatedData[competitionName].some(
-                            (existingItem) => existingItem.event.id === item.event.id
+                    if (!updatedData[seriesName]) {
+                        // New series group — just assign it
+                        updatedData[seriesName] = [newItem];
+                        console.log("New series added:", seriesName);
+                    } else {
+                        const alreadyExists = updatedData[seriesName].some(
+                            (item) => item.eventId === newItem.eventId
                         );
 
-                        // Only add the event if it's not already in the list
-                        if (!isEventAlreadyAdded) {
-                            updatedData[competitionName].push(item);
+                        if (!alreadyExists) {
+                            updatedData[seriesName].push(newItem);
+                            console.log(`New match added to '${seriesName}':`, newItem);
                         }
-                    } else {
-                        // If the competition name doesn't exist, create a new key-value pair
-                        updatedData[competitionName] = [item];
                     }
                 });
 
                 return updatedData;
             });
         };
-
 
         socket.on("seriesData", handleSeriesData);
         socket.on("getAllMatchesBySeriesIdAndGameName", handleMatchData);
@@ -104,7 +100,8 @@ function Sports() {
     };
 
     const handleDropdownToggle = (categoryName, gamename, id) => {
-        socket.emit("getAllMatchesBySeriesIdAndGameName", { seriesId: id, gameName: gamename })
+        console.log({ gameName: categoryName } ,gamename, id ,"iiiii>>>");
+        socket.emit("getAllMatchesBySeriesIdAndGameName", { gameName: categoryName ,gameType: gamename})
         setDropDown((prev) => ({
             ...prev,
             [categoryName]: !prev[categoryName], // Toggle the dropdown value
@@ -128,7 +125,7 @@ function Sports() {
 
     };
 
-    // console.log(matchData, "matchdata");
+    console.log(matchData, "matchdata");
     return (
         <div className='mb-56 bg-white  lg:hidden'>
             <h1 className='text-center bg-[#233c4d] text-white  font-semibold py-3 max-sm:py-1 max-sm:text-sm text-3xl'>Quick Links</h1>
@@ -232,29 +229,29 @@ function Sports() {
                                     {sportList.map((item, index) => (
                                         <div key={index}>
                                             <div
-                                                onClick={() => handleDropdownToggle(item?.competition?.name, key, item?.competition?.id)}
+                                                onClick={() => handleDropdownToggle(item?.seriesName, key, item?.competition?.id)}
                                                 className="flex  justify-between my-1  border-gray-300 cursor-pointer border-b p-1   text-[#2889CE] font-extrabold  hover:py-2 "
                                             >
-                                                <p className="text-[4vw] ">{item?.competition?.name}</p>
+                                                <p className="text-[4vw] ">{item?.seriesName}</p>
                                                 <div className="flex items-center justify-center border border-gray-400 p-2 rounded-md">
                                                     <p className="  text-[#000] p-0.5">
-                                                        {dropDown[item?.competition?.name]
+                                                        {dropDown[item?.seriesName]
                                                             ? <IoIosArrowDown className="text-xl" />
                                                             : <FaGreaterThan className="text-xs" />}
                                                     </p>
                                                 </div>
                                             </div>
-                                            {dropDown[item?.competition?.name] &&
-                                                matchData[item?.competition?.name]?.map((dropdownItem, idx) => (
+                                            {dropDown[item?.seriesName] &&
+                                                matchData[item?.seriesName]?.map((dropdownItem, idx) => (
                                                     <button
                                                         key={idx}
-                                                        onClick={() => handleBookie(key, dropdownItem?.event?.id)}
+                                                        onClick={() => handleBookie(key, dropdownItem?.gameId)}
                                                         // to={`/fullmarket/${key}/${dropdownItem?.event?.id}`}
                                                         className=" text-[#2889CE] font-extrabold  ps-7 py-3 border-b border-gray-300 w-full"
                                                     >
                                                         <div className="flex   ">
                                                             <FaArrowRight className="text-xl" />
-                                                            <p className="text-[4vw] ms-2 ">{dropdownItem?.event?.name}</p>
+                                                            <p className="text-[4vw] ms-2 ">{dropdownItem?.eventName}</p>
                                                         </div>
                                                     </button>
                                                 ))}

@@ -94,7 +94,7 @@ function Booking() {
             socket.emit('getServerTime');
 
             if (name.toLowerCase() === 'cricket') {
-                socket.emit("getoddByMatchId", { eventId });
+                socket.emit("getoddByMatchId", { eventId, type: name });
                 if (t1Data?.length > 0 && (time?.days === 0 && time?.hours === 0 && time?.minutes === 0 && time?.seconds === 0)) {
                     setback((prev) => !prev);
                     const randomValue = Math.floor(Math.random() * 10) + 1; // Generate a random number between 1 and 10
@@ -102,7 +102,7 @@ function Booking() {
                     setLay((prevLay) => !prevLay); // Toggle lay state
                 }
             } else if (name.toLowerCase() === 'tennis') {
-                socket.emit("getoddByMatchId", { eventId });
+                socket.emit("getoddByMatchId", { eventId, type: name });
                 if (t1Data?.length > 0 && (time?.days === 0 && time?.hours === 0 && time?.minutes === 0 && time?.seconds === 0)) {
                     setback((prev) => !prev);
                     const randomValue = Math.floor(Math.random() * 10) + 1; // Generate a random number between 1 and 10
@@ -111,7 +111,7 @@ function Booking() {
                 }
             } else if (name.toLowerCase() === 'soccer') {
 
-                socket.emit("getoddByMatchId", { eventId });
+                socket.emit("getoddByMatchId", { eventId, type: name });
                 if (t1Data?.length > 0 && (time?.days === 0 && time?.hours === 0 && time?.minutes === 0 && time?.seconds === 0)) {
                     setback((prev) => !prev);
                     const randomValue = Math.floor(Math.random() * 10) + 1; // Generate a random number between 1 and 10
@@ -133,24 +133,23 @@ function Booking() {
         //     // console.log(data, 'market data');
         // })
         socket.on('getoddByMatchId', (data) => {
-            // console.log(data
-            //     , 'market data----');
-            if (data?.match?.gameName === 'Cricket') {
-                sett1Data(data?.data?.oddFancy?.t1 || []);
-                sett2Data(data?.data?.oddFancy?.t2 || []);
-                sett3Data(data?.data?.oddFancy?.t3 || []);
+            console.log(data, 'market data----');
+            if (data?.type === 'Cricket') {
+                sett1Data(data?.data?.[0]?.matchOdds?.[0] || []);
+                sett2Data(data?.data?.[0]?.bookMakerOdds?.[0] || []);
+                sett3Data(data?.data?.[0]?.fancyOdds?.[0] || []);
                 sett4Data(data?.data?.oddFancy?.t4 || []);
                 sett5Data(data?.data?.oddFancy?.t5 || []);
                 sett6Data(data?.data?.oddFancy?.t6 || []);
                 sett7Data(data?.data?.oddFancy?.t7 || []);
-                sett8Data(data?.data?.oddFancy?.t8 || []);
-            } else if (data?.match?.gameName === 'Tennis') {
-                setRunnersData(data?.data?.oddFancy[0] || []);
-            } else if (data?.match?.gameName === 'Football') {
+                sett8Data(data?.data?.[0]?.otherMarketOdds?.[0] || []);
+            } else if (data?.type === 'Tennis') {
+                setRunnersData(data?.data?.[0]?.matchOddsResponseDTO?.[0] || []);
+            } else if (data?.type === 'Soccer') {
 
-                setRunnersData(data?.data?.oddFancy[0] || []);
+                setRunnersData(data?.data?.[0]?.matchOddsResponseDTO?.[0] || []);
             }
-            setMatchdetail(data?.match);
+            setMatchdetail(data?.matchData);
             setTime(data?.countdown);
             setliveData(data?.cricketLiveData?.cricketLiveData?.data)
         });
@@ -409,7 +408,7 @@ function Booking() {
 
     const handlePlaceBet = async (type, marketname, teamName, length) => {
         try {
-            console.log("uuuuuuu", type, marketname, teamName, length);
+            console.log("uuuuuuu", type, marketname, teamName, length, showBook[type]);
 
 
             setIsRefreshing(true); // Show loading animation
@@ -456,7 +455,7 @@ function Booking() {
                     let betAmount
                     if (marketname === "Bookmaker") {
                         betAmount = showBook[type]?.rate * Number(showBook[type]?.amount) / 100 || 0;
-                    }if (marketname === "Tied Match") {
+                    } if (marketname === "Tied Match") {
                         betAmount = Number(showBook[type]?.rate * Number(showBook[type]?.amount));
                     } else {
                         betAmount = showBook[type]?.betAmount || 0;
@@ -468,7 +467,7 @@ function Booking() {
                         console.log("B");
 
                         if (betIndx === 0) {
-                            console.log("0",betAmount,betStack);
+                            console.log("0", betAmount, betStack);
 
                             return length === 3 ? {
                                 betData1: betAmount,
@@ -796,35 +795,35 @@ function Booking() {
 
             // console.log((oddreq > 2.1), "----iiioo--", showBook[type]?.rate, oddreq);
 
-            if (name === "Cricket") {
-                if (marketname != "Tied Match") {
-                    console.log("hhhhhhhhhhhh>>>>>>");
-                    
-                    if (betType === "Back") {
-                        const rate = showBook[type]?.rate;
-    
-                        if (
-                          rate < oddreq ||                    // If rate went down
-                          rate - oddreq > 0.02                // If rate increased too much
-                        ) {
-                          setIsRefreshing(false);
-                          return toastWarn("Bet not placed because the rate has changed.");
-                        }
-                        
-                          
-                    } else {
-                        const rate = showBook[type]?.rate;
-    
-                        if (
-                          rate > oddreq ||                    // If rate went down
-                          rate - oddreq > 0.02                // If rate increased too much
-                        ) {
-                          setIsRefreshing(false);
-                          return toastWarn("Bet not placed because the rate has changed.");
-                        }
-                    }                    
-                }
-            }
+            // if (name === "Cricket") {
+            //     if (marketname != "Tied Match") {
+            //         console.log("hhhhhhhhhhhh>>>>>>");
+
+            //         if (betType === "Back") {
+            //             const rate = showBook[type]?.rate;
+
+            //             if (
+            //                 rate < oddreq ||                    // If rate went down
+            //                 rate - oddreq > 0.02                // If rate increased too much
+            //             ) {
+            //                 setIsRefreshing(false);
+            //                 return toastWarn("Bet not placed because the rate has changed.");
+            //             }
+
+
+            //         } else {
+            //             const rate = showBook[type]?.rate;
+
+            //             if (
+            //                 rate > oddreq ||                    // If rate went down
+            //                 rate - oddreq > 0.02                // If rate increased too much
+            //             ) {
+            //                 setIsRefreshing(false);
+            //                 return toastWarn("Bet not placed because the rate has changed.");
+            //             }
+            //         }
+            //     }
+            // }
             // Prepare data
             let data = {};
             // console.log(    betType === "Back" ? showBook[type]?.betAmount : -showBook[type]?.betAmount)
@@ -833,16 +832,20 @@ function Booking() {
                 stack: showBook[type]?.amount || 0,
                 profitloss: betType === "Back" ? showBook[type]?.betAmount : -showBook[type]?.betAmount,
                 point: showBook[type]?.amount || 0,
-                sports_name: matchDetail?.eventType?.name || "",
-                event_name: matchDetail?.competition?.name || "",
-                team_name: matchDetail?.event?.name || "",
+                sports_name: name || "",
+                event_name: matchDetail[0]?.seriesName || "",
+                team_name: matchDetail[0]?.eventName || "",
                 market_name: marketname || "",
                 selection: teamName || "",
                 type: betType || "",
                 odd_req: showBook[type]?.rate || 0,
                 place_time: serverTime || formatDateTime(),
-                match_time: formatDateTime(matchDetail?.event?.openDate),
-                event_id: matchDetail?.event?.id || "",
+                match_time: formatDateTime(
+                    name === "Cricket"
+                        ? matchDetail?.[0]?.eventTime || ""
+                        : matchDetail?.[0]?.startDate || ""
+                ),
+                event_id: matchDetail[0]?.eventId || "",
 
                 // Conditionally add index if marketname is "fancy1" or "fancy"
                 // ...(marketname === "fancy1" || marketname === "Fancy" ? { index: betIndx } : {}),
@@ -866,45 +869,45 @@ function Booking() {
 
             console.log(type, marketname, teamName, "iiiiiiiiii---");
             // API endpoint
-            const url = `${import.meta.env.VITE_BASE_URL}${import.meta.env.VITE_PLACE_BET}`;
+            // const url = `${import.meta.env.VITE_BASE_URL}${import.meta.env.VITE_PLACE_BET}`;
 
-            // Make the API call
-            const placeBet = async () => {
-                try {
-                    const response = await axios.post(url, data, {
-                        headers: {
-                            Authorization: `Bearer ${storedToken}`, // Add Authorization header if needed
-                            'Content-Type': 'application/json' // Ensure proper content type
-                        }
-                    });
+            // // Make the API call
+            // const placeBet = async () => {
+            //     try {
+            //         const response = await axios.post(url, data, {
+            //             headers: {
+            //                 Authorization: `Bearer ${storedToken}`, // Add Authorization header if needed
+            //                 'Content-Type': 'application/json' // Ensure proper content type
+            //             }
+            //         });
 
-                    // Handle success
-                    if (response.status === 200 || response.status === 201) {
-                        toastSuccess("Bet placed successfully!");
-                        HandleCancel(type);
-                        handleRefresh();
-                        dispatch(setBet(true)); // Dispatch action
-                    } else {
-                        toastError(response.data?.message || "Failed to place bet.");
-                    }
-                } catch (error) {
-                    toastError(error.response?.data?.message || "An error occurred.");
-                } finally {
-                    setTimeout(() => {
-                        setIsRefreshing(false); // Hide loading animation after refetching
-                    }, 1000);
-                }
-            };
+            //         // Handle success
+            //         if (response.status === 200 || response.status === 201) {
+            //             toastSuccess("Bet placed successfully!");
+            //             HandleCancel(type);
+            //             handleRefresh();
+            //             dispatch(setBet(true)); // Dispatch action
+            //         } else {
+            //             toastError(response.data?.message || "Failed to place bet.");
+            //         }
+            //     } catch (error) {
+            //         toastError(error.response?.data?.message || "An error occurred.");
+            //     } finally {
+            //         setTimeout(() => {
+            //             setIsRefreshing(false); // Hide loading animation after refetching
+            //         }, 1000);
+            //     }
+            // };
 
-            // Immediate call for "Fancy"
-            if (marketname === "Fancy") {
-                await placeBet();
-            } else {
-                // Delayed call for other market types
-                setTimeout(async () => {
-                    await placeBet();
-                }, 5000); // Call this API after 5 seconds
-            }
+            // // Immediate call for "Fancy"
+            // if (marketname === "Fancy") {
+            //     await placeBet();
+            // } else {
+            //     // Delayed call for other market types
+            //     setTimeout(async () => {
+            //         await placeBet();
+            //     }, 5000); // Call this API after 5 seconds
+            // }
 
         } catch (error) {
             // Handle errors
@@ -1081,7 +1084,7 @@ function Booking() {
 
 
 
-    // console.log("lastBetValueFANCY", t8Data,)
+    // console.log("lastBetValueFANCY", t8Data)
 
     // console.log(lastBetValueFANCY?.fancyBetListData, "+++++++++++++lastBetValue+++++++++");
 
@@ -1102,10 +1105,20 @@ function Booking() {
                 }}
             >
                 <div className='flex justify-between p-2'>
-                    <span className='font-bold text-white text-sm'>OPEN</span>
+                    <span className='font-bold text-white text-sm'>{name === "Cricket" ? t1Data?.mstatus : name === "Tennis" ? runnersData.mstatus : name === "Soccer" ? runnersData.mstatus : null}</span>
                     <div className='text-sm'>
                         <span className='text-[#FFFE27]'>Game time</span>
-                        <span className='text-white'> {formatDateTime(matchDetail?.event?.openDate)}</span>
+                        <span className='text-white'>
+                            {name === "Cricket"
+                                ? matchDetail?.[0]?.eventTime
+                                    ? formatDateTime(matchDetail[0].eventTime)
+                                    : "00:00"
+                                : matchDetail?.[0]?.startDate
+                                    ? formatDateTime(matchDetail[0].startDate)
+                                    : "00:00"}
+
+                        </span>
+
                     </div>
                 </div>
                 <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2">
@@ -1231,7 +1244,7 @@ function Booking() {
             <div>
                 <div className='flex justify-between'>
                     <div className='flex'>
-                        <p className='flex bg-gray-800 text-white font-bold rounded-tr-xl p-1 text-sm'>Match odds<MdOutlineInfo className='mt-1 ms-1' /></p>
+                        <p className='flex bg-gray-800 text-white font-bold rounded-tr-xl p-1 text-sm'>MATCH_ODDS<MdOutlineInfo className='mt-1 ms-1' /></p>
                         <p className=' lg:flex hidden font-semibold items-center ms-3 text-sm'><span className='p-0.5 bg-yellow-300 '><GoDotFill className=' top-1 ' /></span>Cash Out</p>
                     </div>
                     <div className='flex text-sm items-center px-2'>
@@ -1249,7 +1262,13 @@ function Booking() {
                                 </th>
                                 <th scope="col" className="px-2 lg:hidden py-1 ">
                                     <div className='bg-[#BED5D8] text-center'>
-                                        <span className='text-[#6987B1]'>min/max</span> 100-1000
+                                        <span className='text-[#6987B1]'>min/max</span> {
+                                            name === 'Cricket'
+                                                ? (t1Data.min === 0 && t1Data.max === 0 ? "1-0" : `${t1Data.min} - ${t1Data.max}`)
+                                                : name === 'Tennis'
+                                                    ? (runnersData.min === 0 && runnersData.max === 0 ? "1-0" : `${runnersData.min} - ${runnersData.max}`)
+                                                    : null
+                                        }
                                     </div>
                                 </th>
 
@@ -1262,7 +1281,14 @@ function Booking() {
 
                                 <th colSpan={2} scope="col" className="px-2 max-lg:hidden py-1 ">
                                     <div className='bg-[#D7E8F4] text-center '>
-                                        min/max  100-1000
+                                        min/max  {
+                                            name === 'Cricket'
+                                                ? (t1Data.min === 0 && t1Data.max === 0 ? "1-0" : `${t1Data.min} - ${t1Data.max}`)
+                                                : name === 'Tennis'
+                                                    ? (runnersData.min === 0 && runnersData.max === 0 ? "1-0" : `${runnersData.min} - ${runnersData.max}`)
+                                                    : null
+                                        }
+
                                     </div>
                                 </th>
 
@@ -1275,25 +1301,26 @@ function Booking() {
                             <>
                                 {name === 'Cricket' ? (
                                     <>
-                                        {(t1Data?.[0] || defaultData)?.map((item, index) =>
+                                        {(t1Data?.oddDatas || defaultData)?.map((item, index) =>
                                             <tbody key={index} className=''>
+
 
                                                 <tr className="bg-white border-b border-gray-300">
 
                                                     <td className="px-2 py-0.5 text-nowrap">
                                                         <a className="flex gap-x-2 flex-wrap capitalize text-gray-900 font-semibold">
-                                                            {item?.nat}
+                                                            {item?.rname}
                                                         </a>
                                                         {!previousBet?.MATCH_ODDS ? (
                                                             showBook?.t1?.amount > 0 && (
                                                                 <>
                                                                     {betType === "Back" ? (
-                                                                        <p className={`${showBook.t1.name === item?.nat ? 'text-[#45A255]' : 'text-red-500'} font-[700]`}>
-                                                                            {showBook.t1.name === item?.nat ? `(${Number(showBook.t1.betAmount).toFixed(2)})` : `(${Number(showBook.t1.amount).toFixed(2)})`}
+                                                                        <p className={`${showBook.t1.name === item?.rname ? 'text-[#45A255]' : 'text-red-500'} font-[700]`}>
+                                                                            {showBook.t1.name === item?.rname ? `(${Number(showBook.t1.betAmount).toFixed(2)})` : `(${Number(showBook.t1.amount).toFixed(2)})`}
                                                                         </p>
                                                                     ) : (
-                                                                        <p className={`${showBook.t1.name === item?.nat ? 'text-red-500' : 'text-[#45A255]'} font-[700]`}>
-                                                                            {showBook.t1.name === item?.nat ? `(${Number(showBook.t1.betAmount).toFixed(2)})` : `(${Number(showBook.t1.amount).toFixed(2)})`}
+                                                                        <p className={`${showBook.t1.name === item?.rname ? 'text-red-500' : 'text-[#45A255]'} font-[700]`}>
+                                                                            {showBook.t1.name === item?.rname ? `(${Number(showBook.t1.betAmount).toFixed(2)})` : `(${Number(showBook.t1.amount).toFixed(2)})`}
                                                                         </p>
                                                                     )}
                                                                 </>
@@ -1376,26 +1403,26 @@ function Booking() {
                                                                                             {
                                                                                                 matchData?.runners?.length === 2 ?
                                                                                                     <>
-                                                                                                        {showBook.t1.name === item?.nat? (
-                                                                                                            <p className={`${showBook.t1.name === item?.nat ? 'text-[#45A255]' : 'text-red-500'} font-[700]`}>
+                                                                                                        {showBook.t1.name === item?.rname ? (
+                                                                                                            <p className={`${showBook.t1.name === item?.rname ? 'text-[#45A255]' : 'text-red-500'} font-[700]`}>
                                                                                                                 {`(${index === 0 ? Number(previousBet?.MATCH_ODDS?.previous_bet1) : Number(previousBet?.MATCH_ODDS?.previous_bet2)} + ${Number(showBook.t1.betAmount)})`}
                                                                                                             </p>
                                                                                                         ) : (
-                                                                                                            <p className={`${showBook.t1.name === item?.nat ? 'text-[#45A255]' : 'text-red-500'} font-[700]`}>
+                                                                                                            <p className={`${showBook.t1.name === item?.rname ? 'text-[#45A255]' : 'text-red-500'} font-[700]`}>
                                                                                                                 {`(${index === 0 ? Number(previousBet?.MATCH_ODDS?.previous_bet1) : Number(previousBet?.MATCH_ODDS?.previous_bet2)} - ${Number(showBook?.t1?.amount)}) `}
                                                                                                             </p>
                                                                                                         )}
                                                                                                     </>
                                                                                                     :
                                                                                                     <>
-                                                                                                        {showBook.t1.name === item?.nat? (
-                                                                                                            <p className={`${showBook.t1.name === item?.nat? 'text-[#45A255]' : 'text-red-500'} font-[700]`}>
+                                                                                                        {showBook.t1.name === item?.rname ? (
+                                                                                                            <p className={`${showBook.t1.name === item?.rname ? 'text-[#45A255]' : 'text-red-500'} font-[700]`}>
                                                                                                                 {`(${Number(index === 0 ? previousBet?.MATCH_ODDS?.previous_bet1
                                                                                                                     : index === 1 ? previousBet?.MATCH_ODDS?.previous_bet2
                                                                                                                         : previousBet?.MATCH_ODDS?.previous_bet3).toFixed(2)} + ${Number(showBook.t1.betAmount)})`}
                                                                                                             </p>
                                                                                                         ) : (
-                                                                                                            <p className={`${showBook.t1.name === item?.nat ? 'text-[#45A255]' : 'text-red-500'} font-[700]`}>
+                                                                                                            <p className={`${showBook.t1.name === item?.rname ? 'text-[#45A255]' : 'text-red-500'} font-[700]`}>
                                                                                                                 {`(${Number(index === 0 ? previousBet?.MATCH_ODDS?.previous_bet1
                                                                                                                     : index === 1 ? previousBet?.MATCH_ODDS?.previous_bet2
                                                                                                                         : previousBet?.MATCH_ODDS?.previous_bet3).toFixed(2)} - ${Number(showBook?.t1?.amount)})`}
@@ -1410,26 +1437,26 @@ function Booking() {
                                                                                             {
                                                                                                 matchData?.runners?.length === 2 ?
                                                                                                     <>
-                                                                                                        {showBook.t1.name === item?.nat ? (
-                                                                                                            <p className={`${showBook.t1.name === item?.nat ? 'text-red-500' : 'text-[#45A255]'} font-[700]`}>
+                                                                                                        {showBook.t1.name === item?.rname ? (
+                                                                                                            <p className={`${showBook.t1.name === item?.rname ? 'text-red-500' : 'text-[#45A255]'} font-[700]`}>
                                                                                                                 {`(${index === 0 ? Number(previousBet?.MATCH_ODDS?.previous_bet1) : Number(previousBet?.MATCH_ODDS?.previous_bet2)} - ${Number(showBook.t1.betAmount)})`}
                                                                                                             </p>
                                                                                                         ) : (
-                                                                                                            <p className={`${showBook.t1.name === item?.nat ? 'text-red-500' : 'text-[#45A255]'} font-[700]`}>
+                                                                                                            <p className={`${showBook.t1.name === item?.rname ? 'text-red-500' : 'text-[#45A255]'} font-[700]`}>
                                                                                                                 {`(${index === 0 ? Number(previousBet?.MATCH_ODDS?.previous_bet1) : Number(previousBet?.MATCH_ODDS?.previous_bet2)} + ${Number(showBook?.t1?.amount)})`}
                                                                                                             </p>
                                                                                                         )}
                                                                                                     </>
                                                                                                     :
                                                                                                     <>
-                                                                                                        {showBook.t1.name === item?.nat ? (
-                                                                                                            <p className={`${showBook.t1.name === item?.nat? 'text-red-500' : 'text-[#45A255]'} font-[700]`}>
+                                                                                                        {showBook.t1.name === item?.rname ? (
+                                                                                                            <p className={`${showBook.t1.name === item?.rname ? 'text-red-500' : 'text-[#45A255]'} font-[700]`}>
                                                                                                                 {`(${Number(index === 0 ? previousBet?.MATCH_ODDS?.previous_bet1
                                                                                                                     : index === 1 ? previousBet?.MATCH_ODDS?.previous_bet2
                                                                                                                         : previousBet?.MATCH_ODDS?.previous_bet3).toFixed(2)} - ${Number(showBook.t1.betAmount)})`}
                                                                                                             </p>
                                                                                                         ) : (
-                                                                                                            <p className={`${showBook.t1.name === item?.nat ? 'text-red-500' : 'text-[#45A255]'} font-[700]`}>
+                                                                                                            <p className={`${showBook.t1.name === item?.rname ? 'text-red-500' : 'text-[#45A255]'} font-[700]`}>
                                                                                                                 {`(${Number(index === 0 ? previousBet?.MATCH_ODDS?.previous_bet1
                                                                                                                     : index === 1 ? previousBet?.MATCH_ODDS?.previous_bet2
                                                                                                                         : previousBet?.MATCH_ODDS?.previous_bet3).toFixed(2)} + ${Number(showBook?.t1?.amount)})`}
@@ -1455,7 +1482,7 @@ function Booking() {
     `}
                                                     >
                                                         <button
-                                                            onClick={() => handleBookie("t1", item?.nat, "blue", item?.b3, item?.mname, "Back", "", "b3", index)}
+                                                            onClick={() => handleBookie("t1", item?.rname, "blue", item?.b3, item?.mname, "Back", "", "b3", index)}
                                                             className="py-[3px]"
                                                         >
                                                             <p className="px-1 leading-4 font-[700] text-[12px]">{item?.b3 || 0}</p>
@@ -1471,7 +1498,7 @@ function Booking() {
     `}
                                                     >
                                                         <button
-                                                            onClick={() => handleBookie("t1", item?.nat, "blue", item?.b2, item?.mname, "Back", "", "b2", index)}
+                                                            onClick={() => handleBookie("t1", item?.rname, "blue", item?.b2, item?.mname, "Back", "", "b2", index)}
                                                             className="py-[3px]"
                                                         >
                                                             <p className="px-1 leading-4 font-[700] text-[12px]">{item?.b2 || 0}</p>
@@ -1487,7 +1514,7 @@ function Booking() {
     `}
                                                     >
                                                         <button
-                                                            onClick={() => handleBookie("t1", item?.nat, "blue", item?.b1, item?.mname, "Back", "", "b1", index)}
+                                                            onClick={() => handleBookie("t1", item?.rname, "blue", item?.b1, item?.mname, "Back", "", "b1", index)}
                                                             className="py-[3px]"
                                                         >
                                                             <p className="px-1 leading-4 font-[700] text-[12px]">{item?.b1 || 0}</p>
@@ -1504,7 +1531,7 @@ function Booking() {
     `}
                                                     >
                                                         <button
-                                                            onClick={() => handleBookie("t1", item?.nat, "red", item?.l1, item?.mname, "Lay", "", "l1", index)}
+                                                            onClick={() => handleBookie("t1", item?.rname, "red", item?.l1, item?.mname, "Lay", "", "l1", index)}
                                                             className="py-[3px]"
                                                         >
                                                             <p className="px-1 leading-4 font-[700] text-[12px]">{item?.l1 || 0}</p>
@@ -1520,7 +1547,7 @@ function Booking() {
     `}
                                                     >
                                                         <button
-                                                            onClick={() => handleBookie("t1", item?.nat, "red", item?.l2, item?.mname, "Lay", "", "l2", index)}
+                                                            onClick={() => handleBookie("t1", item?.rname, "red", item?.l2, item?.mname, "Lay", "", "l2", index)}
                                                             className="py-[3px]"
                                                         >
                                                             <p className="px-1 leading-4 font-[700] text-[12px]">{item?.l2 || 0}</p>
@@ -1534,7 +1561,7 @@ function Booking() {
                                                         className={`${showBook.t1.boxname == item?.l3 ? 'bg-[#F4496D] text-white' : 'bg-[#F6E6EA] text-gray-900'}   hidden lg:table-cell py-0.5 font-semibold text-center w-[60px] lg:w-[100px] ${(lay && [2, 4, 7,].includes(random)) ? "bg-[#9ce0f3]" : "bg-[#F6E6EA]"}`}
                                                     >
                                                         <button
-                                                            onClick={() => handleBookie("t1", item?.nat, "red", item?.l3, item?.mname, "Lay", "", "l3", index)}
+                                                            onClick={() => handleBookie("t1", item?.rname, "red", item?.l3, item?.mname, "Lay", "", "l3", index)}
                                                             className='py-[3px]'
                                                         >
                                                             <p className="px-1 leading-4  text-[12px] font-[700]">{item?.l3 || 0}</p>
@@ -1543,7 +1570,7 @@ function Booking() {
                                                     </td>
                                                 </tr>
 
-                                                {showBook.t1.name == item?.nat &&
+                                                {showBook.t1.name == item?.rname &&
                                                     <tr className={` ${showBook.t1.color == 'red' ? 'lg:bg-[#FAA9BA] bg-[#F1D5DC]' : 'lg:bg-[#72BBEF] bg-[#BEDDF4]'} border-b border-gray-300`}>
                                                         <td colSpan={7} className=' pt-1 '>
                                                             <div className="grid grid-cols-4 gap-2 lg:px-3 px-0.5 pb-0.5 border-b border-[#72BBEF] max-lg:grid-cols-2">
@@ -1593,8 +1620,8 @@ function Booking() {
 
                                                                 {/* Place Bet Button */}
                                                                 <button
-                                                                    onClick={() => handlePlaceBet("t1", item?.mname, item?.nat, t1Data[0]?.length)}
-                                                                    disabled={item?.mstatus !== "OPEN"}
+                                                                    onClick={() => handlePlaceBet("t1", t1Data?.mname, item?.rname, t1Data?.oddDatas?.length)}
+                                                                    disabled={t1Data?.mstatus !== "OPEN"}
                                                                     className={`flex max-lg:hidden justify-center items-center h-full border rounded-md border-gray-600 
                                                                         ${showBook.t1.amount
                                                                             ? 'bg-gradient-to-t from-[#1e714f] to-[#16a34a]'
@@ -1623,8 +1650,8 @@ function Booking() {
 
                                                                 </button>
                                                                 <button
-                                                                    onClick={() => handlePlaceBet("t1", item?.mname, item?.nat, t1Data[0]?.length)}
-                                                                    disabled={item?.mstatus !== "OPEN"}
+                                                                    onClick={() => handlePlaceBet("t1", t1Data?.mname, item?.rname, t1Data?.oddDatas?.length)}
+                                                                    disabled={t1Data?.mstatus !== "OPEN"}
                                                                     className={`flex justify-center items-center h-full 
                                                                         ${showBook.t1.amount
                                                                             ? 'bg-gradient-to-t from-[#1e714f] to-[#16a34a]'
@@ -1654,54 +1681,66 @@ function Booking() {
                                     </>
                                 ) : name === 'Tennis' ? (
                                     <>
-                                        {Array.isArray(matchData?.runners) && matchData?.runners.length > 0 ? (
-                                            matchData.runners.map((item, index) => {
-                                                const backPrices = item.backPrices || [];
-                                                const layPrices = item.layPrices || [];
+                                        {Array.isArray(runnersData?.oddDatas) && runnersData?.oddDatas.length > 0 ? (
+                                            runnersData?.oddDatas.map((item, index) => {
+                                                const backPrices = [
+                                                    { price: item.b1, size: item.bs1 },
+                                                    { price: item.b2, size: item.bs2 },
+                                                    { price: item.b3, size: item.bs3 }
+                                                ];
+
+                                                const layPrices = [
+                                                    { price: item.l1, size: item.ls1 },
+                                                    { price: item.l2, size: item.ls2 },
+                                                    { price: item.l3, size: item.ls3 }
+                                                ];
+
+                                                // console.log(index);
+
 
                                                 return (
                                                     <tbody key={index}>
                                                         <tr className="bg-white border-b border-gray-300">
                                                             <td className="px-2 py-0.5 text-nowrap">
                                                                 <a className="flex gap-x-2 flex-wrap capitalize text-gray-900 font-semibold">
-                                                                    {item?.name} {/* Display runner name from matchData */}
+                                                                    {item?.rname} {/* Display runner name from matchData */}
                                                                 </a>
-                                                                {!previousBet?.["Match Odds"] ? (
+                                                                {!previousBet?.["MATCH_ODDS"] ? (
                                                                     showBook?.t1?.amount > 0 && (
                                                                         <>
                                                                             {betType === "Back" ? (
-                                                                                <p className={`${showBook.t1.name === item?.name ? 'text-[#45A255]' : 'text-red-500'} font-[700]`}>
-                                                                                    {showBook.t1.name === item?.name ? `(${Number(showBook.t1.betAmount).toFixed(2)})` : `(${Number(showBook.t1.amount).toFixed(2)})`}
+                                                                                <p className={`${showBook.t1.name === item?.rname ? 'text-[#45A255]' : 'text-red-500'} font-[700]`}>
+                                                                                    {showBook.t1.name === item?.rname ? `(${Number(showBook.t1.betAmount).toFixed(2)})` : `(${Number(showBook.t1.amount).toFixed(2)})`}
                                                                                 </p>
                                                                             ) : (
-                                                                                <p className={`${showBook.t1.name === item?.name ? 'text-red-500' : 'text-[#45A255]'} font-[700]`}>
-                                                                                    {showBook.t1.name === item?.name ? `(${Number(showBook.t1.betAmount).toFixed(2)})` : `(${Number(showBook.t1.amount).toFixed(2)})`}
+                                                                                <p className={`${showBook.t1.name === item?.rname ? 'text-red-500' : 'text-[#45A255]'} font-[700]`}>
+                                                                                    {showBook.t1.name === item?.rname ? `(${Number(showBook.t1.betAmount).toFixed(2)})` : `(${Number(showBook.t1.amount).toFixed(2)})`}
                                                                                 </p>
                                                                             )}
                                                                         </>
                                                                     )
                                                                 ) : (
                                                                     <>
-                                                                        {!previousBet?.["Match Odds"]?.previous_bet1 !== undefined && !previousBet?.["Match Odds"]?.previous_bet1 !== null &&
-                                                                            !previousBet?.["Match Odds"]?.previous_bet2 !== undefined && !previousBet?.["Match Odds"]?.previous_bet2 !== null && (
+                                                                        {!previousBet?.["MATCH_ODDS"]?.previous_bet1 !== undefined && !previousBet?.["MATCH_ODDS"]?.previous_bet1 !== null &&
+                                                                            !previousBet?.["MATCH_ODDS"]?.previous_bet2 !== undefined && !previousBet?.["MATCH_ODDS"]?.previous_bet2 !== null && (
                                                                                 <div className="flex items-center justify-start">
-                                                                                    {previousBet?.["Match Odds"].type === "Back" ? (
+                                                                                    {previousBet?.["MATCH_ODDS"].type === "Back" ? (
                                                                                         <div className="flex items-center">
                                                                                             <FaLongArrowAltRight
-                                                                                                className={`mr-2 ${Number(index === 0 ? previousBet?.["Match Odds"]?.previous_bet1 : previousBet?.["Match Odds"]?.previous_bet2) > 0 ? 'text-[#45A255]' : 'text-red-500'}`}
+                                                                                                className={`mr-2 ${Number(index === 0 ? previousBet?.["MATCH_ODDS"]?.previous_bet1 : previousBet?.["MATCH_ODDS"]?.previous_bet2) > 0 ? 'text-[#45A255]' : 'text-red-500'}`}
                                                                                             />
-                                                                                            <p className={`font-[700] ${Number(index === 0 ? previousBet?.["Match Odds"]?.previous_bet1 : previousBet?.["Match Odds"]?.previous_bet2) > 0 ? 'text-[#45A255]' : 'text-red-500'}`}>
-                                                                                                {Number(index === 0 ? previousBet?.["Match Odds"]?.previous_bet1 : previousBet?.["Match Odds"]?.previous_bet2).toFixed(2)}
+                                                                                            <p className={`font-[700] ${Number(index === 0 ? previousBet?.["MATCH_ODDS"]?.previous_bet1 : previousBet?.["MATCH_ODDS"]?.previous_bet2) > 0 ? 'text-[#45A255]' : 'text-red-500'}`}>
+                                                                                                {Number(index === 0 ? previousBet?.["MATCH_ODDS"]?.previous_bet1 : previousBet?.["MATCH_ODDS"]?.previous_bet2).toFixed(2)}
                                                                                             </p>
 
                                                                                         </div>
                                                                                     ) : (
                                                                                         <div className="flex items-center">
                                                                                             <FaLongArrowAltRight
-                                                                                                className={`mr-2 ${Number(index === 0 ? previousBet?.["Match Odds"]?.previous_bet1 : previousBet?.["Match Odds"]?.previous_bet2) > 0 ? 'text-[#45A255]' : 'text-red-500'}`}
+                                                                                                className={`mr-2 ${Number(index === 0 ? previousBet?.["MATCH_ODDS"]?.previous_bet1 : previousBet?.["MATCH_ODDS"]?.previous_bet2) > 0 ? 'text-[#45A255]' : 'text-red-500'}`}
                                                                                             />
-                                                                                            <p className={`font-[700] ${Number(index === 0 ? previousBet?.["Match Odds"]?.previous_bet1 : previousBet?.["Match Odds"]?.previous_bet2) > 0 ? 'text-[#45A255]' : 'text-red-500'}`}>
-                                                                                                {Number(index === 0 ? previousBet?.["Match Odds"]?.previous_bet1 : previousBet?.["Match Odds"]?.previous_bet2).toFixed(2)}
+                                                                                            <p className={`font-[700] ${Number(index === 0 ? previousBet?.["MATCH_ODDS"]?.previous_bet1 : previousBet?.["MATCH_ODDS"]?.previous_bet2) > 0 ? 'text-[#45A255]' : 'text-red-500'}`}>
+                                                                                                {Number(index === 0 ? previousBet?.["MATCH_ODDS"]?.previous_bet1 : previousBet?.["MATCH_ODDS"]?.previous_bet2).toFixed(2)}
                                                                                             </p>
                                                                                         </div>
                                                                                     )}
@@ -1711,25 +1750,25 @@ function Booking() {
                                                                                         <>
                                                                                             {betType === "Back" ? (
                                                                                                 <>
-                                                                                                    {showBook.t1.name === item?.name ? (
-                                                                                                        <p className={`${showBook.t1.name === item?.name ? 'text-[#45A255]' : 'text-red-500'} font-[700]`}>
-                                                                                                            {`(${index === 0 ? Number(previousBet?.["Match Odds"]?.previous_bet1) : Number(previousBet?.["Match Odds"]?.previous_bet2)} + ${Number(showBook.t1.betAmount)})`}
+                                                                                                    {showBook.t1.name === item?.rname ? (
+                                                                                                        <p className={`${showBook.t1.name === item?.rname ? 'text-[#45A255]' : 'text-red-500'} font-[700]`}>
+                                                                                                            {`(${index === 0 ? Number(previousBet?.["MATCH_ODDS"]?.previous_bet1) : Number(previousBet?.["MATCH_ODDS"]?.previous_bet2)} + ${Number(showBook.t1.betAmount)})`}
                                                                                                         </p>
                                                                                                     ) : (
-                                                                                                        <p className={`${showBook.t1.name === item?.name ? 'text-[#45A255]' : 'text-red-500'} font-[700]`}>
-                                                                                                            {`(${index === 0 ? Number(!previousBet?.["Match Odds"]?.previous_bet1) : Number(previousBet?.["Match Odds"]?.previous_bet2)} - ${Number(showBook?.t1?.amount)})`}
+                                                                                                        <p className={`${showBook.t1.name === item?.rname ? 'text-[#45A255]' : 'text-red-500'} font-[700]`}>
+                                                                                                            {`(${index === 0 ? Number(!previousBet?.["MATCH_ODDS"]?.previous_bet1) : Number(previousBet?.["MATCH_ODDS"]?.previous_bet2)} - ${Number(showBook?.t1?.amount)})`}
                                                                                                         </p>
                                                                                                     )}
                                                                                                 </>
                                                                                             ) : (
                                                                                                 <>
-                                                                                                    {showBook.t1.name === item?.name ? (
-                                                                                                        <p className={`${showBook.t1.name === item?.name ? 'text-red-500' : 'text-[#45A255]'} font-[700]`}>
-                                                                                                            {`(${index === 0 ? Number(previousBet?.["Match Odds"]?.previous_bet1) : Number(previousBet?.["Match Odds"]?.previous_bet2)} - ${Number(showBook.t1.betAmount)})`}
+                                                                                                    {showBook.t1.name === item?.rname ? (
+                                                                                                        <p className={`${showBook.t1.name === item?.rname ? 'text-red-500' : 'text-[#45A255]'} font-[700]`}>
+                                                                                                            {`(${index === 0 ? Number(previousBet?.["MATCH_ODDS"]?.previous_bet1) : Number(previousBet?.["MATCH_ODDS"]?.previous_bet2)} - ${Number(showBook.t1.betAmount)})`}
                                                                                                         </p>
                                                                                                     ) : (
-                                                                                                        <p className={`${showBook.t1.name === item?.name ? 'text-red-500' : 'text-[#45A255]'} font-[700]`}>
-                                                                                                            {`(${index === 0 ? Number(previousBet?.["Match Odds"]?.previous_bet1) : Number(previousBet?.["Match Odds"]?.previous_bet2)} + ${Number(showBook?.t1?.amount)})`}
+                                                                                                        <p className={`${showBook.t1.name === item?.rname ? 'text-red-500' : 'text-[#45A255]'} font-[700]`}>
+                                                                                                            {`(${index === 0 ? Number(previousBet?.["MATCH_ODDS"]?.previous_bet1) : Number(previousBet?.["MATCH_ODDS"]?.previous_bet2)} + ${Number(showBook?.t1?.amount)})`}
                                                                                                         </p>
                                                                                                     )}
                                                                                                 </>
@@ -1746,21 +1785,21 @@ function Booking() {
 
                                                             {/* Back Prices */}
                                                             <td className="bg-[#D7E8F4] text-gray-900 hidden lg:table-cell text-center w-[100px]">
-                                                                <button className="py-[3px]" onClick={() => handleBookie("t1", item?.name, "blue", backPrices[2]?.price, item?.mname, "Back", "", "backPrices[2]?.price")}>
+                                                                <button className="py-[3px]" onClick={() => handleBookie("t1", item?.rname, "blue", backPrices[2]?.price, item?.mname, "Back", "", "b3",)}>
                                                                     <p className="px-1 font-[700] text-[12px]">{backPrices[2]?.price || 0}</p>
                                                                     <p className="px-1 font-light text-gray-800 text-[11px]">{backPrices[2]?.size || 0}</p>
                                                                 </button>
                                                             </td>
 
                                                             <td className="bg-[#B7D5EA] text-gray-900 hidden lg:table-cell text-center w-[100px]">
-                                                                <button className="py-[3px]" onClick={() => handleBookie("t1", item?.name, "blue", backPrices[1]?.price, item?.mname, "Back", "", "backPrices[1]?.price")}>
+                                                                <button className="py-[3px]" onClick={() => handleBookie("t1", item?.rname, "blue", backPrices[1]?.price, item?.mname, "Back", "", "b2",index)}>
                                                                     <p className="px-1 font-[700] text-[12px]">{backPrices[1]?.price || 0}</p>
                                                                     <p className="px-1 font-light text-gray-800 text-[11px]">{backPrices[1]?.size || 0}</p>
                                                                 </button>
                                                             </td>
 
                                                             <td className="bg-[#72BBEF] text-gray-900 text-center w-[100px]">
-                                                                <button className="py-[3px]" onClick={() => handleBookie("t1", item?.name, "blue", backPrices[0]?.price, item?.mname, "Back", "", "backPrices[0]?.price", index)}>
+                                                                <button className="py-[3px]" onClick={() => handleBookie("t1", item?.rname, "blue", backPrices[0]?.price, item?.mname, "Back", "", "b1", index)}>
                                                                     <p className="px-1 font-[700] text-[12px]">{backPrices[0]?.price || 0}</p>
                                                                     <p className="px-1 font-light text-gray-800 text-[11px]">{backPrices[0]?.size || 0}</p>
                                                                 </button>
@@ -1768,27 +1807,27 @@ function Booking() {
 
                                                             {/* Lay Prices */}
                                                             <td className="bg-[#FAA9BA] text-gray-900 text-center w-[100px]">
-                                                                <button className="py-[3px]" onClick={() => handleBookie("t1", item?.name, "red", layPrices[0]?.price, item?.mname, "Lay", "", "layPrices[0]?.price", index)}>
+                                                                <button className="py-[3px]" onClick={() => handleBookie("t1", item?.rname, "red", layPrices[0]?.price, item?.mname, "Lay", "", "l1", index)}>
                                                                     <p className="px-1 font-[700] text-[12px]">{layPrices[0]?.price || 0}</p>
                                                                     <p className="px-1 font-light text-gray-800 text-[11px]">{layPrices[0]?.size || 0}</p>
                                                                 </button>
                                                             </td>
 
                                                             <td className="bg-[#EFD3D9] text-gray-900 hidden lg:table-cell text-center w-[100px]">
-                                                                <button className="py-[3px]" onClick={() => handleBookie("t1", item?.name, "red", layPrices[1]?.price, item?.mname, "Lay", "", "layPrices[1]?.price",)}>
+                                                                <button className="py-[3px]" onClick={() => handleBookie("t1", item?.rname, "red", layPrices[1]?.price, item?.mname, "Lay", "", "l2",)}>
                                                                     <p className="px-1 font-[700] text-[12px]">{layPrices[1]?.price || 0}</p>
                                                                     <p className="px-1 font-light text-gray-800 text-[11px]">{layPrices[1]?.size || 0}</p>
                                                                 </button>
                                                             </td>
 
                                                             <td className="bg-[#F6E6EA] text-gray-900 hidden lg:table-cell text-center w-[100px]">
-                                                                <button className="py-[3px]" onClick={() => handleBookie("t1", item?.name, "red", layPrices[2]?.price, item?.mname, "Lay", "", "layPrices[1]?.price",)}>
+                                                                <button className="py-[3px]" onClick={() => handleBookie("t1", item?.rname, "red", layPrices[2]?.price, item?.mname, "Lay", "", "l3",)}>
                                                                     <p className="px-1 font-[700] text-[12px]">{layPrices[2]?.price || 0}</p>
                                                                     <p className="px-1 font-light text-gray-800 text-[11px]">{layPrices[2]?.size || 0}</p>
                                                                 </button>
                                                             </td>
                                                         </tr>
-                                                        {showBook.t1.name == item?.name &&
+                                                        {showBook.t1.name == item?.rname &&
                                                             <tr className={` ${showBook.t1.color == 'red' ? 'lg:bg-[#FAA9BA] bg-[#F1D5DC]' : 'lg:bg-[#72BBEF] bg-[#BEDDF4]'} border-b border-gray-300`}>
                                                                 <td colSpan={7} className=' pt-1 '>
                                                                     <div className="grid grid-cols-4 gap-2 lg:px-3 px-0.5 pb-0.5 border-b border-[#72BBEF] max-lg:grid-cols-2">
@@ -1838,8 +1877,8 @@ function Booking() {
 
                                                                         {/* Place Bet Button */}
                                                                         <button
-                                                                            onClick={() => handlePlaceBet("t1", matchDetail?.marketName, item?.name, matchData?.runners?.length)}
-                                                                            // disabled={runnersData?.status != "OPEN"}
+                                                                             onClick={() => handlePlaceBet("t1", runnersData?.mname, item?.rname, runnersData?.oddDatas?.length)}
+                                                                             disabled={runnersData?.status != "OPEN"}
                                                                             className={`flex max-lg:hidden justify-center items-center h-full border rounded-md border-gray-600                                  
                                                                             ${showBook.t1.amount
                                                                                     ? 'bg-gradient-to-t from-[#1e714f] to-[#16a34a]'
@@ -1869,8 +1908,8 @@ function Booking() {
 
                                                                         </button>
                                                                         <button
-                                                                            onClick={() => handlePlaceBet("t1", matchDetail?.marketName, item?.name, matchData?.runners?.length)}
-                                                                            // disabled={item?.mstatus !== "OPEN"}
+                                                                            onClick={() => handlePlaceBet("t1", runnersData?.mname, item?.rname, runnersData?.oddDatas?.length)}
+                                                                            disabled={runnersData?.status != "OPEN"}
                                                                             className={`flex  justify-center items-center h-full bg-[#577094] border rounded-md border-gray-600
                                                                                 ${showBook.t1.amount
                                                                                     ? 'bg-gradient-to-t from-[#1e714f] to-[#16a34a]'
@@ -1906,28 +1945,37 @@ function Booking() {
                                 ) : name === 'Soccer' ? (
                                     <>
 
-                                        {Array.isArray(matchData?.runners) && matchData?.runners.length > 0 ? (
-                                            matchData.runners.map((item, index) => {
-                                                const backPrices = item.backPrices || [];
-                                                const layPrices = item.layPrices || [];
+                                        {Array.isArray(runnersData?.oddDatas) && runnersData?.oddDatas.length > 0 ? (
+                                            runnersData?.oddDatas.map((item, index) => {
+                                                const backPrices = [
+                                                    { price: item.b1, size: item.bs1 },
+                                                    { price: item.b2, size: item.bs2 },
+                                                    { price: item.b3, size: item.bs3 }
+                                                ];
+
+                                                const layPrices = [
+                                                    { price: item.l1, size: item.ls1 },
+                                                    { price: item.l2, size: item.ls2 },
+                                                    { price: item.l3, size: item.ls3 }
+                                                ];
 
                                                 return (
                                                     <tbody key={index}>
                                                         <tr className="bg-white border-b border-gray-300">
                                                             <td className="px-2 py-0.5 text-nowrap">
                                                                 <a className="flex gap-x-2 flex-wrap capitalize text-gray-900 font-semibold">
-                                                                    {item.name} {/* Display runner name from matchData */}
+                                                                    {item?.rname} {/* Display runner name from matchData */}
                                                                 </a>
-                                                                {!previousBet?.["Match Odds"] ? (
+                                                                {!previousBet?.["MATCH_ODDS"] ? (
                                                                     showBook?.t1?.amount > 0 && (
                                                                         <>
                                                                             {betType === "Back" ? (
-                                                                                <p className={`${showBook.t1.name === item?.name ? 'text-[#45A255]' : 'text-red-500'} font-[700]`}>
-                                                                                    {showBook.t1.name === item?.name ? `(${Number(showBook.t1.betAmount).toFixed(2)})` : `(${Number(showBook.t1.amount).toFixed(2)})`}
+                                                                                <p className={`${showBook.t1.name === item?.rname ? 'text-[#45A255]' : 'text-red-500'} font-[700]`}>
+                                                                                    {showBook.t1.name === item?.rname ? `(${Number(showBook.t1.betAmount).toFixed(2)})` : `(${Number(showBook.t1.amount).toFixed(2)})`}
                                                                                 </p>
                                                                             ) : (
-                                                                                <p className={`${showBook.t1.name === item?.name ? 'text-red-500' : 'text-[#45A255]'} font-[700]`}>
-                                                                                    {showBook.t1.name === item?.name ? `(${Number(showBook.t1.betAmount).toFixed(2)})` : `(${Number(showBook.t1.amount).toFixed(2)})`}
+                                                                                <p className={`${showBook.t1.name === item?.rname ? 'text-red-500' : 'text-[#45A255]'} font-[700]`}>
+                                                                                    {showBook.t1.name === item?.rname ? `(${Number(showBook.t1.betAmount).toFixed(2)})` : `(${Number(showBook.t1.amount).toFixed(2)})`}
                                                                                 </p>
                                                                             )}
                                                                         </>
@@ -1935,41 +1983,41 @@ function Booking() {
                                                                 ) : (
 
                                                                     <>
-                                                                        {previousBet?.["Match Odds"]?.previous_bet1 !== undefined && previousBet?.["Match Odds"]?.previous_bet1 !== null &&
-                                                                            previousBet?.["Match Odds"]?.previous_bet2 !== undefined && previousBet?.["Match Odds"]?.previous_bet2 !== null && (
+                                                                        {previousBet?.["MATCH_ODDS"]?.previous_bet1 !== undefined && previousBet?.["MATCH_ODDS"]?.previous_bet1 !== null &&
+                                                                            previousBet?.["MATCH_ODDS"]?.previous_bet2 !== undefined && previousBet?.["MATCH_ODDS"]?.previous_bet2 !== null && (
                                                                                 <div className="flex items-center justify-start">
-                                                                                    {previousBet?.["Match Odds"]?.type === "Back" ? (
+                                                                                    {previousBet?.["MATCH_ODDS"]?.type === "Back" ? (
                                                                                         <div className="flex items-center">
                                                                                             <FaLongArrowAltRight
                                                                                                 className={`mr-2 ${index === 0
-                                                                                                    ? Number(previousBet?.["Match Odds"]?.previous_bet1) > 0
+                                                                                                    ? Number(previousBet?.["MATCH_ODDS"]?.previous_bet1) > 0
                                                                                                         ? 'text-[#45A255]'
                                                                                                         : 'text-red-500'
                                                                                                     : index === 1
-                                                                                                        ? Number(previousBet?.["Match Odds"]?.previous_bet2) > 0
+                                                                                                        ? Number(previousBet?.["MATCH_ODDS"]?.previous_bet2) > 0
                                                                                                             ? 'text-[#45A255] '
                                                                                                             : 'text-red-500'
-                                                                                                        : Number(previousBet?.["Match Odds"]?.previous_bet3) > 0
+                                                                                                        : Number(previousBet?.["MATCH_ODDS"]?.previous_bet3) > 0
                                                                                                             ? 'text-[#45A255]'
                                                                                                             : 'text-red-500'
                                                                                                     }`}
 
                                                                                             />
                                                                                             {matchData?.runners?.length === 2 ? (
-                                                                                                <p className={`font-[700] ${Number(index === 0 ? previousBet?.["Match Odds"]?.previous_bet1 : previousBet?.["Match Odds"]?.previous_bet2) > 0 ? 'text-[#45A255]' : 'text-red-500'}`}>
+                                                                                                <p className={`font-[700] ${Number(index === 0 ? previousBet?.["MATCH_ODDS"]?.previous_bet1 : previousBet?.["MATCH_ODDS"]?.previous_bet2) > 0 ? 'text-[#45A255]' : 'text-red-500'}`}>
                                                                                                     {Number(index === 0 ?
-                                                                                                        previousBet?.["Match Odds"]?.previous_bet1
+                                                                                                        previousBet?.["MATCH_ODDS"]?.previous_bet1
                                                                                                         :
-                                                                                                        previousBet?.["Match Odds"]?.previous_bet2).toFixed(2)}
+                                                                                                        previousBet?.["MATCH_ODDS"]?.previous_bet2).toFixed(2)}
                                                                                                 </p>
                                                                                             ) : (
-                                                                                                <p className={`font-[700] ${Number(index === 0 ? previousBet?.["Match Odds"]?.previous_bet1 : (index === 1 ? previousBet?.["Match Odds"]?.previous_bet2 : previousBet?.["Match Odds"]?.previous_bet3)) > 0 ? 'text-[#45A255]' : 'text-red-500'}`}>
+                                                                                                <p className={`font-[700] ${Number(index === 0 ? previousBet?.["MATCH_ODDS"]?.previous_bet1 : (index === 1 ? previousBet?.["MATCH_ODDS"]?.previous_bet2 : previousBet?.["MATCH_ODDS"]?.previous_bet3)) > 0 ? 'text-[#45A255]' : 'text-red-500'}`}>
                                                                                                     {Number(index === 0 ?
-                                                                                                        previousBet?.["Match Odds"]?.previous_bet1
+                                                                                                        previousBet?.["MATCH_ODDS"]?.previous_bet1
                                                                                                         : index === 1 ?
-                                                                                                            previousBet?.["Match Odds"]?.previous_bet2
+                                                                                                            previousBet?.["MATCH_ODDS"]?.previous_bet2
                                                                                                             :
-                                                                                                            previousBet?.["Match Odds"]?.previous_bet3).toFixed(2)}
+                                                                                                            previousBet?.["MATCH_ODDS"]?.previous_bet3).toFixed(2)}
                                                                                                 </p>
                                                                                             )}
                                                                                         </div>
@@ -1977,27 +2025,27 @@ function Booking() {
                                                                                         <div className="flex items-center">
                                                                                             <FaLongArrowAltRight
                                                                                                 className={`mr-2 ${index === 0
-                                                                                                    ? Number(previousBet?.["Match Odds"]?.previous_bet1) > 0
+                                                                                                    ? Number(previousBet?.["MATCH_ODDS"]?.previous_bet1) > 0
                                                                                                         ? 'text-[#45A255]'
                                                                                                         : 'text-red-500'
                                                                                                     : index === 1
-                                                                                                        ? Number(previousBet?.["Match Odds"]?.previous_bet2) > 0
+                                                                                                        ? Number(previousBet?.["MATCH_ODDS"]?.previous_bet2) > 0
                                                                                                             ? 'text-[#45A255] '
                                                                                                             : 'text-red-500'
-                                                                                                        : Number(previousBet?.["Match Odds"]?.previous_bet3) > 0
+                                                                                                        : Number(previousBet?.["MATCH_ODDS"]?.previous_bet3) > 0
                                                                                                             ? 'text-[#45A255]'
                                                                                                             : 'text-red-500'
                                                                                                     }`}
                                                                                             />
                                                                                             {matchData?.runners?.length === 2 ? (
-                                                                                                <p className={`font-[700] ${Number(index === 0 ? previousBet?.["Match Odds"]?.previous_bet1 : previousBet?.["Match Odds"]?.previous_bet2) > 0 ? 'text-[#45A255]' : 'text-red-500'}`}>
-                                                                                                    {Number(index === 0 ? previousBet?.["Match Odds"]?.previous_bet1 : previousBet?.["Match Odds"]?.previous_bet2).toFixed(2)}
+                                                                                                <p className={`font-[700] ${Number(index === 0 ? previousBet?.["MATCH_ODDS"]?.previous_bet1 : previousBet?.["MATCH_ODDS"]?.previous_bet2) > 0 ? 'text-[#45A255]' : 'text-red-500'}`}>
+                                                                                                    {Number(index === 0 ? previousBet?.["MATCH_ODDS"]?.previous_bet1 : previousBet?.["MATCH_ODDS"]?.previous_bet2).toFixed(2)}
                                                                                                 </p>
                                                                                             ) : (
-                                                                                                <p className={`font-[700] ${Number(index === 0 ? previousBet?.["Match Odds"]?.previous_bet1 : (index === 1 ? previousBet?.["Match Odds"]?.previous_bet2 : previousBet?.["Match Odds"]?.previous_bet3)) > 0 ? 'text-[#45A255]' : 'text-red-500'}`}>
-                                                                                                    {Number(index === 0 ? previousBet?.["Match Odds"]?.previous_bet1
-                                                                                                        : index === 1 ? previousBet?.["Match Odds"]?.previous_bet2
-                                                                                                            : previousBet?.["Match Odds"]?.previous_bet3).toFixed(2)}
+                                                                                                <p className={`font-[700] ${Number(index === 0 ? previousBet?.["MATCH_ODDS"]?.previous_bet1 : (index === 1 ? previousBet?.["MATCH_ODDS"]?.previous_bet2 : previousBet?.["MATCH_ODDS"]?.previous_bet3)) > 0 ? 'text-[#45A255]' : 'text-red-500'}`}>
+                                                                                                    {Number(index === 0 ? previousBet?.["MATCH_ODDS"]?.previous_bet1
+                                                                                                        : index === 1 ? previousBet?.["MATCH_ODDS"]?.previous_bet2
+                                                                                                            : previousBet?.["MATCH_ODDS"]?.previous_bet3).toFixed(2)}
                                                                                                 </p>
                                                                                             )}
                                                                                         </div>
@@ -2011,29 +2059,29 @@ function Booking() {
                                                                                                     {
                                                                                                         matchData?.runners?.length === 2 ?
                                                                                                             <>
-                                                                                                                {showBook.t1.name === item?.name ? (
-                                                                                                                    <p className={`${showBook.t1.name === item?.name ? 'text-[#45A255]' : 'text-red-500'} font-[700]`}>
-                                                                                                                        {`(${index === 0 ? Number(previousBet?.["Match Odds"]?.previous_bet1) : Number(previousBet?.["Match Odds"]?.previous_bet2)} + ${Number(showBook.t1.betAmount)})`}
+                                                                                                                {showBook.t1.name === item?.rname ? (
+                                                                                                                    <p className={`${showBook.t1.name === item?.rname ? 'text-[#45A255]' : 'text-red-500'} font-[700]`}>
+                                                                                                                        {`(${index === 0 ? Number(previousBet?.["MATCH_ODDS"]?.previous_bet1) : Number(previousBet?.["MATCH_ODDS"]?.previous_bet2)} + ${Number(showBook.t1.betAmount)})`}
                                                                                                                     </p>
                                                                                                                 ) : (
-                                                                                                                    <p className={`${showBook.t1.name === item?.name ? 'text-[#45A255]' : 'text-red-500'} font-[700]`}>
-                                                                                                                        {`(${index === 0 ? Number(previousBet?.["Match Odds"]?.previous_bet1) : Number(previousBet?.["Match Odds"]?.previous_bet2)} - ${Number(showBook?.t1?.amount)}) `}
+                                                                                                                    <p className={`${showBook.t1.name === item?.rname ? 'text-[#45A255]' : 'text-red-500'} font-[700]`}>
+                                                                                                                        {`(${index === 0 ? Number(previousBet?.["MATCH_ODDS"]?.previous_bet1) : Number(previousBet?.["MATCH_ODDS"]?.previous_bet2)} - ${Number(showBook?.t1?.amount)}) `}
                                                                                                                     </p>
                                                                                                                 )}
                                                                                                             </>
                                                                                                             :
                                                                                                             <>
-                                                                                                                {showBook.t1.name === item?.name ? (
-                                                                                                                    <p className={`${showBook.t1.name === item?.name ? 'text-[#45A255]' : 'text-red-500'} font-[700]`}>
-                                                                                                                        {`(${Number(index === 0 ? previousBet?.["Match Odds"]?.previous_bet1
-                                                                                                                            : index === 1 ? previousBet?.["Match Odds"]?.previous_bet2
-                                                                                                                                : previousBet?.["Match Odds"]?.previous_bet3).toFixed(2)} + ${Number(showBook.t1.betAmount)})`}
+                                                                                                                {showBook.t1.name === item?.rname ? (
+                                                                                                                    <p className={`${showBook.t1.name === item?.rname ? 'text-[#45A255]' : 'text-red-500'} font-[700]`}>
+                                                                                                                        {`(${Number(index === 0 ? previousBet?.["MATCH_ODDS"]?.previous_bet1
+                                                                                                                            : index === 1 ? previousBet?.["MATCH_ODDS"]?.previous_bet2
+                                                                                                                                : previousBet?.["MATCH_ODDS"]?.previous_bet3).toFixed(2)} + ${Number(showBook.t1.betAmount)})`}
                                                                                                                     </p>
                                                                                                                 ) : (
-                                                                                                                    <p className={`${showBook.t1.name === item?.name ? 'text-[#45A255]' : 'text-red-500'} font-[700]`}>
-                                                                                                                        {`(${Number(index === 0 ? previousBet?.["Match Odds"]?.previous_bet1
-                                                                                                                            : index === 1 ? previousBet?.["Match Odds"]?.previous_bet2
-                                                                                                                                : previousBet?.["Match Odds"]?.previous_bet3).toFixed(2)} - ${Number(showBook?.t1?.amount)})`}
+                                                                                                                    <p className={`${showBook.t1.name === item?.rname ? 'text-[#45A255]' : 'text-red-500'} font-[700]`}>
+                                                                                                                        {`(${Number(index === 0 ? previousBet?.["MATCH_ODDS"]?.previous_bet1
+                                                                                                                            : index === 1 ? previousBet?.["MATCH_ODDS"]?.previous_bet2
+                                                                                                                                : previousBet?.["MATCH_ODDS"]?.previous_bet3).toFixed(2)} - ${Number(showBook?.t1?.amount)})`}
                                                                                                                     </p>
                                                                                                                 )}
                                                                                                             </>
@@ -2045,29 +2093,29 @@ function Booking() {
                                                                                                     {
                                                                                                         matchData?.runners?.length === 2 ?
                                                                                                             <>
-                                                                                                                {showBook.t1.name === item?.name ? (
-                                                                                                                    <p className={`${showBook.t1.name === item?.name ? 'text-red-500' : 'text-[#45A255]'} font-[700]`}>
-                                                                                                                        {`(${index === 0 ? Number(previousBet?.["Match Odds"]?.previous_bet1) : Number(previousBet?.["Match Odds"]?.previous_bet2)} - ${Number(showBook.t1.betAmount)})`}
+                                                                                                                {showBook.t1.name === item?.rname ? (
+                                                                                                                    <p className={`${showBook.t1.name === item?.rname ? 'text-red-500' : 'text-[#45A255]'} font-[700]`}>
+                                                                                                                        {`(${index === 0 ? Number(previousBet?.["MATCH_ODDS"]?.previous_bet1) : Number(previousBet?.["MATCH_ODDS"]?.previous_bet2)} - ${Number(showBook.t1.betAmount)})`}
                                                                                                                     </p>
                                                                                                                 ) : (
-                                                                                                                    <p className={`${showBook.t1.name === item?.name ? 'text-red-500' : 'text-[#45A255]'} font-[700]`}>
-                                                                                                                        {`(${index === 0 ? Number(previousBet?.["Match Odds"]?.previous_bet1) : Number(previousBet?.["Match Odds"]?.previous_bet2)} + ${Number(showBook?.t1?.amount)})`}
+                                                                                                                    <p className={`${showBook.t1.name === item?.rname ? 'text-red-500' : 'text-[#45A255]'} font-[700]`}>
+                                                                                                                        {`(${index === 0 ? Number(previousBet?.["MATCH_ODDS"]?.previous_bet1) : Number(previousBet?.["MATCH_ODDS"]?.previous_bet2)} + ${Number(showBook?.t1?.amount)})`}
                                                                                                                     </p>
                                                                                                                 )}
                                                                                                             </>
                                                                                                             :
                                                                                                             <>
-                                                                                                                {showBook.t1.name === item?.name ? (
-                                                                                                                    <p className={`${showBook.t1.name === item?.name ? 'text-red-500' : 'text-[#45A255]'} font-[700]`}>
-                                                                                                                        {`(${Number(index === 0 ? previousBet?.["Match Odds"]?.previous_bet1
-                                                                                                                            : index === 1 ? previousBet?.["Match Odds"]?.previous_bet2
-                                                                                                                                : previousBet?.["Match Odds"]?.previous_bet3).toFixed(2)} - ${Number(showBook.t1.betAmount)})`}
+                                                                                                                {showBook.t1.name === item?.rname ? (
+                                                                                                                    <p className={`${showBook.t1.name === item?.rname ? 'text-red-500' : 'text-[#45A255]'} font-[700]`}>
+                                                                                                                        {`(${Number(index === 0 ? previousBet?.["MATCH_ODDS"]?.previous_bet1
+                                                                                                                            : index === 1 ? previousBet?.["MATCH_ODDS"]?.previous_bet2
+                                                                                                                                : previousBet?.["MATCH_ODDS"]?.previous_bet3).toFixed(2)} - ${Number(showBook.t1.betAmount)})`}
                                                                                                                     </p>
                                                                                                                 ) : (
-                                                                                                                    <p className={`${showBook.t1.name === item?.name ? 'text-red-500' : 'text-[#45A255]'} font-[700]`}>
-                                                                                                                        {`(${Number(index === 0 ? previousBet?.["Match Odds"]?.previous_bet1
-                                                                                                                            : index === 1 ? previousBet?.["Match Odds"]?.previous_bet2
-                                                                                                                                : previousBet?.["Match Odds"]?.previous_bet3).toFixed(2)} + ${Number(showBook?.t1?.amount)})`}
+                                                                                                                    <p className={`${showBook.t1.name === item?.rname ? 'text-red-500' : 'text-[#45A255]'} font-[700]`}>
+                                                                                                                        {`(${Number(index === 0 ? previousBet?.["MATCH_ODDS"]?.previous_bet1
+                                                                                                                            : index === 1 ? previousBet?.["MATCH_ODDS"]?.previous_bet2
+                                                                                                                                : previousBet?.["MATCH_ODDS"]?.previous_bet3).toFixed(2)} + ${Number(showBook?.t1?.amount)})`}
                                                                                                                     </p>
                                                                                                                 )}
                                                                                                             </>}
@@ -2084,21 +2132,21 @@ function Booking() {
 
                                                             {/* Back Prices */}
                                                             <td className="bg-[#D7E8F4] text-gray-900 hidden lg:table-cell text-center w-[100px]">
-                                                                <button className="py-[3px]" onClick={() => handleBookie("t1", item?.name, "blue", backPrices[2]?.price, item?.mname, "Back")}>
+                                                                <button className="py-[3px]" onClick={() => handleBookie("t1", item?.rname, "blue", backPrices[2]?.price, item?.mname, "Back")}>
                                                                     <p className="px-1 font-[700] text-[12px]">{backPrices[2]?.price || 0}</p>
                                                                     <p className="px-1 font-light text-gray-800 text-[11px]">{backPrices[2]?.size || 0}</p>
                                                                 </button>
                                                             </td>
 
                                                             <td className="bg-[#B7D5EA] text-gray-900 hidden lg:table-cell text-center w-[100px]">
-                                                                <button className="py-[3px]" onClick={() => handleBookie("t1", item?.name, "blue", backPrices[1]?.price, item?.mname, "Back")}>
+                                                                <button className="py-[3px]" onClick={() => handleBookie("t1", item?.rname, "blue", backPrices[1]?.price, item?.mname, "Back")}>
                                                                     <p className="px-1 font-[700] text-[12px]">{backPrices[1]?.price || 0}</p>
                                                                     <p className="px-1 font-light text-gray-800 text-[11px]">{backPrices[1]?.size || 0}</p>
                                                                 </button>
                                                             </td>
 
                                                             <td className="bg-[#72BBEF] text-gray-900 text-center w-[100px]">
-                                                                <button className="py-[3px]" onClick={() => handleBookie("t1", item?.name, "blue", backPrices[0]?.price, item?.mname, "Back", "", "backPrices[0]?.price", index)}>
+                                                                <button className="py-[3px]" onClick={() => handleBookie("t1", item?.rname, "blue", backPrices[0]?.price, item?.mname, "Back", "", "b1", index)}>
                                                                     <p className="px-1 font-[700] text-[12px]">{backPrices[0]?.price || 0}</p>
                                                                     <p className="px-1 font-light text-gray-800 text-[11px]">{backPrices[0]?.size || 0}</p>
                                                                 </button>
@@ -2106,27 +2154,27 @@ function Booking() {
 
                                                             {/* Lay Prices */}
                                                             <td className="bg-[#FAA9BA] text-gray-900 text-center w-[100px]">
-                                                                <button className="py-[3px]" onClick={() => handleBookie("t1", item?.name, "red", layPrices[0]?.price, item?.mname, "Lay", "", "layPrices[0]?.price", index)}>
+                                                                <button className="py-[3px]" onClick={() => handleBookie("t1", item?.rname, "red", layPrices[0]?.price, item?.mname, "Lay", "", "l1", index)}>
                                                                     <p className="px-1 font-[700] text-[12px]">{layPrices[0]?.price || 0}</p>
                                                                     <p className="px-1 font-light text-gray-800 text-[11px]">{layPrices[0]?.size || 0}</p>
                                                                 </button>
                                                             </td>
 
                                                             <td className="bg-[#EFD3D9] text-gray-900 hidden lg:table-cell text-center w-[100px]">
-                                                                <button className="py-[3px]" onClick={() => handleBookie("t1", item?.name, "red", layPrices[1]?.price, item?.mname, "Lay")}>
+                                                                <button className="py-[3px]" onClick={() => handleBookie("t1", item?.rname, "red", layPrices[1]?.price, item?.mname, "Lay")}>
                                                                     <p className="px-1 font-[700] text-[12px]">{layPrices[1]?.price || 0}</p>
                                                                     <p className="px-1 font-light text-gray-800 text-[11px]">{layPrices[1]?.size || 0}</p>
                                                                 </button>
                                                             </td>
 
                                                             <td className="bg-[#F6E6EA] text-gray-900 hidden lg:table-cell text-center w-[100px]">
-                                                                <button className="py-[3px]" onClick={() => handleBookie("t1", item?.name, "red", layPrices[2]?.price, item?.mname, "Lay")}>
+                                                                <button className="py-[3px]" onClick={() => handleBookie("t1", item?.rname, "red", layPrices[2]?.price, item?.mname, "Lay")}>
                                                                     <p className="px-1 font-[700] text-[12px]">{layPrices[2]?.price || 0}</p>
                                                                     <p className="px-1 font-light text-gray-800 text-[11px]">{layPrices[2]?.size || 0}</p>
                                                                 </button>
                                                             </td>
                                                         </tr>
-                                                        {showBook.t1.name == item?.name &&
+                                                        {showBook.t1.name == item?.rname &&
                                                             <tr className={` ${showBook.t1.color == 'red' ? 'lg:bg-[#FAA9BA] bg-[#F1D5DC]' : 'lg:bg-[#72BBEF] bg-[#BEDDF4]'} border-b border-gray-300`}>
                                                                 <td colSpan={7} className=' pt-1 '>
                                                                     <div className="grid grid-cols-4 gap-2 lg:px-3 px-0.5 pb-0.5 border-b border-[#72BBEF] max-lg:grid-cols-2">
@@ -2176,8 +2224,8 @@ function Booking() {
 
                                                                         {/* Place Bet Button */}
                                                                         <button
-                                                                            onClick={() => handlePlaceBet("t1", matchDetail?.marketName, item?.name, matchData?.runners?.length)}
-                                                                            // disabled={runnersData?.status != "OPEN"}
+                                                                            onClick={() => handlePlaceBet("t1", runnersData?.mname, item?.rname, runnersData?.oddDatas?.length)}
+                                                                            disabled={runnersData?.status != "OPEN"}
                                                                             className={`flex max-lg:hidden justify-center items-center h-full border rounded-md border-gray-600 
                                                                             ${showBook.t1.amount
                                                                                     ? 'bg-gradient-to-t from-[#1e714f] to-[#16a34a]'
@@ -2206,8 +2254,8 @@ function Booking() {
 
                                                                         </button>
                                                                         <button
-                                                                            onClick={() => handlePlaceBet("t1", matchDetail?.marketName, item?.name, matchData?.runners?.length)}
-                                                                            // disabled={item?.mstatus !== "OPEN"}
+                                                                          onClick={() => handlePlaceBet("t1", runnersData?.mname, item?.rname, runnersData?.oddDatas?.length)}
+                                                                          disabled={runnersData?.status != "OPEN"}
                                                                             className={`flex  justify-center items-center h-full bg-[#577094] border rounded-md border-gray-600
                                                                                 ${showBook.t1.amount
                                                                                     ? 'bg-gradient-to-t from-[#1e714f] to-[#16a34a]'
@@ -2286,7 +2334,7 @@ function Booking() {
 
                                         <th colSpan={2} scope="col" className="px-2 max-lg:hidden py-1 ">
                                             <div className='bg-[#D7E8F4] text-center '>
-                                                min/max {t8Data[0]?.min === 0 && t8Data[0]?.max === 0 ? "1-0" : `${t8Data[0]?.min} - ${t8Data[0]?.max}`}
+                                                min/max {t8Data?.min === 0 && t8Data?.max === 0 ? "1-0" : `${t8Data?.min} - ${t8Data?.max}`}
 
 
                                             </div>
@@ -2301,14 +2349,14 @@ function Booking() {
 
 
                                     <>
-                                        {(t8Data || defaultData)?.map((item, index) =>
+                                        {(t8Data.oddDatas || defaultData)?.map((item, index) =>
                                             <tbody key={index} className=''>
 
                                                 <tr className="bg-white border-b border-gray-300">
 
                                                     <td className="px-2 py-0.5 text-nowrap">
                                                         <a className="flex gap-x-2 flex-wrap capitalize text-gray-900 font-semibold">
-                                                            {item?.nat}
+                                                            {item?.rname}
                                                         </a>
 
                                                         {!previousBet?.["Tied Match"] ? (
@@ -2316,12 +2364,12 @@ function Booking() {
                                                                 {showBook.t8.amount > 0 && (
                                                                     <>
                                                                         {betType === "Back" ? (
-                                                                            <p className={`${showBook.t8.name === item?.nat ? 'text-[#45A255]' : 'text-red-500'} font-[700]`}>
-                                                                                {showBook.t8.name === item?.nat ? `(${Number(showBook.t8.rate).toFixed(2) * Number(showBook.t8.amount).toFixed(2)})` : `(${Number(showBook.t8.amount).toFixed(2)})`}
+                                                                            <p className={`${showBook.t8.name === item?.rname ? 'text-[#45A255]' : 'text-red-500'} font-[700]`}>
+                                                                                {showBook.t8.name === item?.rname ? `(${Number(showBook.t8.rate).toFixed(2) * Number(showBook.t8.amount).toFixed(2)})` : `(${Number(showBook.t8.amount).toFixed(2)})`}
                                                                             </p>
                                                                         ) : (
-                                                                            <p className={`${showBook.t8.name === item?.nat ? 'text-red-500' : 'text-[#45A255]'} font-[700]`}>
-                                                                                {showBook.t8.name === item?.nat ? `(${Number(showBook.t8.rate).toFixed(2) * Number(showBook.t8.amount).toFixed(2)})` : `(${Number(showBook.t8.amount).toFixed(2)})`}
+                                                                            <p className={`${showBook.t8.name === item?.rname ? 'text-red-500' : 'text-[#45A255]'} font-[700]`}>
+                                                                                {showBook.t8.name === item?.rname ? `(${Number(showBook.t8.rate).toFixed(2) * Number(showBook.t8.amount).toFixed(2)})` : `(${Number(showBook.t8.amount).toFixed(2)})`}
                                                                             </p>
                                                                         )}
                                                                     </>
@@ -2338,9 +2386,9 @@ function Booking() {
                                                                             {previousBet?.["Tied Match"]?.type === "Back" ? (
                                                                                 <div className="flex items-center">
                                                                                     <FaLongArrowAltRight
-                                                                                        className={`mr-2 ${previousBet?.["Tied Match"]?.selection === item?.nat ? 'text-[#45A255]' : 'text-red-500'}`}
+                                                                                        className={`mr-2 ${previousBet?.["Tied Match"]?.selection === item?.rname ? 'text-[#45A255]' : 'text-red-500'}`}
                                                                                     />
-                                                                                    <p className={`font-[700] ${previousBet?.["Tied Match"]?.selection === item?.nat ? 'text-[#45A255]' : 'text-red-500'}`}>
+                                                                                    <p className={`font-[700] ${previousBet?.["Tied Match"]?.selection === item?.rname ? 'text-[#45A255]' : 'text-red-500'}`}>
 
                                                                                         {index === 0 ? Number(previousBet?.["Tied Match"]?.previous_bet1).toFixed(2) : Number(previousBet?.["Tied Match"]?.previous_bet2).toFixed(2)}
 
@@ -2349,9 +2397,9 @@ function Booking() {
                                                                             ) : (
                                                                                 <div className="flex items-center">
                                                                                     <FaLongArrowAltRight
-                                                                                        className={`mr-2 ${previousBet?.["Tied Match"]?.selection === item?.nat ? 'text-red-500' : 'text-[#45A255]'}`}
+                                                                                        className={`mr-2 ${previousBet?.["Tied Match"]?.selection === item?.rname ? 'text-red-500' : 'text-[#45A255]'}`}
                                                                                     />
-                                                                                    <p className={`font-[700] ${previousBet?.["Tied Match"]?.selection === item?.nat ? 'text-red-500' : 'text-[#45A255]'}`}>
+                                                                                    <p className={`font-[700] ${previousBet?.["Tied Match"]?.selection === item?.rname ? 'text-red-500' : 'text-[#45A255]'}`}>
                                                                                         {index === 0 ? Number(previousBet?.["Tied Match"]?.previous_bet1).toFixed(2) : Number(previousBet?.["Tied Match"]?.previous_bet2).toFixed(2)}
 
                                                                                     </p>
@@ -2362,24 +2410,24 @@ function Booking() {
                                                                                 <>
                                                                                     {betType === "Back" ? (
                                                                                         <>
-                                                                                            {showBook.t8.name === item?.nat ? (
-                                                                                                <p className={`${showBook.t8.name === item?.nat ? 'text-[#45A255]' : 'text-red-500'} font-[700]`}>
+                                                                                            {showBook.t8.name === item?.rname ? (
+                                                                                                <p className={`${showBook.t8.name === item?.rname ? 'text-[#45A255]' : 'text-red-500'} font-[700]`}>
                                                                                                     {`(${index === 0 ? Number(previousBet?.["Tied Match"]?.previous_bet1) : Number(previousBet?.["Tied Match"]?.previous_bet2)} + ${Number(showBook.t8.rate).toFixed(2) * Number(showBook.t8.amount).toFixed(2)})`}
                                                                                                 </p>
                                                                                             ) : (
-                                                                                                <p className={`${showBook.t8.name === item?.nat ? 'text-[#45A255]' : 'text-red-500'} font-[700]`}>
+                                                                                                <p className={`${showBook.t8.name === item?.rname ? 'text-[#45A255]' : 'text-red-500'} font-[700]`}>
                                                                                                     {`(${index === 0 ? Number(previousBet?.["Tied Match"]?.previous_bet1) : Number(previousBet?.["Tied Match"]?.previous_bet2)} - ${Number(showBook?.t8?.amount)})`}
                                                                                                 </p>
                                                                                             )}
                                                                                         </>
                                                                                     ) : (
                                                                                         <>
-                                                                                            {showBook.t8.name === item?.nat ? (
-                                                                                                <p className={`${showBook.t8.name === item?.nat ? 'text-red-500' : 'text-[#45A255]'} font-[700]`}>
+                                                                                            {showBook.t8.name === item?.rname ? (
+                                                                                                <p className={`${showBook.t8.name === item?.rname ? 'text-red-500' : 'text-[#45A255]'} font-[700]`}>
                                                                                                     {`(${index === 0 ? Number(previousBet?.["Tied Match"]?.previous_bet1) : Number(previousBet?.["Tied Match"]?.previous_bet2)} - ${Number(showBook.t8.rate).toFixed(2) * Number(showBook.t8.amount).toFixed(2)})`}
                                                                                                 </p>
                                                                                             ) : (
-                                                                                                <p className={`${showBook.t8.name === item?.nat ? 'text-red-500' : 'text-[#45A255]'} font-[700]`}>
+                                                                                                <p className={`${showBook.t8.name === item?.rname ? 'text-red-500' : 'text-[#45A255]'} font-[700]`}>
                                                                                                     {`(${index === 0 ? Number(previousBet?.["Tied Match"]?.previous_bet1) : Number(previousBet?.["Tied Match"]?.previous_bet2)} + ${Number(showBook?.t8?.amount)})`}
                                                                                                 </p>
                                                                                             )}
@@ -2397,7 +2445,7 @@ function Booking() {
                                                         className={`${showBook.t8.boxname == item?.b3 ? 'bg-[#2A8EE1] text-white' : 'bg-[#D7E8F4] text-gray-900'} hidden lg:table-cell   font-semibold text-center w-[60px] lg:w-[100px] } ${(back && [3, 4, 7].includes(random)) ? "bg-[#efe8ae]" : "bg-[#D7E8F4]"} `}
                                                     >
                                                         <button
-                                                            onClick={() => handleBookie("t8", item?.nat, "blue", item?.b3, item?.gtype, "Back", "", "b3", index)}
+                                                            onClick={() => handleBookie("t8", item?.rname, "blue", item?.b3, item?.gtype, "Back", "", "b3", index)}
                                                             className='py-[3px]'>
                                                             <p className="px-1 leading-4  font-[700] text-[12px]">{item?.b3 || 0}</p>
                                                             <p className="px-1 leading-4  font-light text-gray-800 text-[11px]">{item?.bs3 || 0}</p>
@@ -2409,7 +2457,7 @@ function Booking() {
                                                         className={`${showBook.t8.boxname == item?.b2 ? 'bg-[#2A8EE1] text-white' : 'bg-[#B7D5EA] text-gray-900'} hidden lg:table-cell   font-semibold text-center  w-[60px] lg:w-[100px] ${(back && [2, 6, 4].includes(random)) ? "bg-[#efe8ae]" : "bg-[#B7D5EA]"}`}
                                                     >
                                                         <button
-                                                            onClick={() => handleBookie("t8", item?.nat, "blue", item?.b2, item?.gtype, "Back", "", "b2", index)}
+                                                            onClick={() => handleBookie("t8", item?.rname, "blue", item?.b2, item?.gtype, "Back", "", "b2", index)}
                                                             className='py-[3px]'>
                                                             <p className="px-1 leading-4   font-[700] text-[12px]">{item?.b2 || 0}</p>
                                                             <p className="px-1 leading-4  font-light text-gray-800 text-[11px]">{item?.bs2 || 0}</p>
@@ -2421,7 +2469,7 @@ function Booking() {
                                                         className={`${showBook.t8.boxname == item?.b1 ? 'bg-[#2A8EE1] text-white' : 'bg-[#72BBEF] text-gray-900'}   font-semibold text-center w-[60px] lg:w-[100px] ${(back && [9, 1, 7].includes(random)) ? "bg-[#efe8ae]" : "bg-[#72BBEF]"}`}
                                                     >
                                                         <button
-                                                            onClick={() => handleBookie("t8", item?.nat, "blue", item?.b1, item?.gtype, "Back", "", "b1", index)}
+                                                            onClick={() => handleBookie("t8", item?.rname, "blue", item?.b1, item?.gtype, "Back", "", "b1", index)}
                                                             className='py-[3px]'>
                                                             <p className="px-1 leading-4  font-[700] text-[12px]">{item?.b1 || 0}</p>
                                                             <p className="px-1 leading-4  font-light text-gray-800    text-[11px]">{item?.bs1 || 0}</p>
@@ -2435,7 +2483,7 @@ function Booking() {
                                                         className={`${showBook.t8.boxname == item?.l1 ? 'bg-[#F4496D] text-white' : 'bg-[#FAA9BA] text-gray-900'}    py-0.5 font-semibold text-center w-[60px] lg:w-[100px] ${(lay && [8, 4, 10].includes(random)) ? "bg-[#9ce0f3]" : "bg-[#FAA9BA]"}`}
                                                     >
                                                         <button
-                                                            onClick={() => handleBookie("t8", item?.nat, "red", item?.l1, item?.gtype, "Lay", "", "l1", index)}
+                                                            onClick={() => handleBookie("t8", item?.rname, "red", item?.l1, item?.gtype, "Lay", "", "l1", index)}
                                                             className='py-[3px]'>
                                                             <p className="px-1 leading-4 font-[700] text-[12px]">{item?.l1 || 0}</p>
                                                             <p className="px-1 leading-4 font-light text-gray-800   text-[11px]">{item?.ls1 || 0}</p>
@@ -2447,7 +2495,7 @@ function Booking() {
                                                         className={`${showBook.t8.boxname == item?.l2 ? 'bg-[#F4496D] text-white' : 'bg-[#EFD3D9] text-gray-900'}   hidden lg:table-cell  py-0.5 font-semibold text-center w-[60px] lg:w-[100px] ${(lay && [8, 5, 9].includes(random)) ? "bg-[#9ce0f3]" : "bg-[#EFD3D9]"}`}
                                                     >
                                                         <button
-                                                            onClick={() => handleBookie("t8", item?.nat, "red", item?.l2, item?.gtype, "Lay", "", "l2", index)}
+                                                            onClick={() => handleBookie("t8", item?.rname, "red", item?.l2, item?.gtype, "Lay", "", "l2", index)}
                                                             className='py-[3px]'>
                                                             <p className="px-1 leading-4  font-[700] text-[12px]">{item?.l2 || 0}</p>
                                                             <span className="px-1 leading-4  font-light text-gray-800  text-[11px]">{item?.ls2 || 0}</span>
@@ -2459,7 +2507,7 @@ function Booking() {
                                                         className={`${showBook.t8.boxname == item?.l3 ? 'bg-[#F4496D] text-white' : 'bg-[#F6E6EA] text-gray-900'}   hidden lg:table-cell py-0.5 font-semibold text-center w-[60px] lg:w-[100px] ${(lay && [2, 4, 7,].includes(random)) ? "bg-[#9ce0f3]" : "bg-[#F6E6EA]"}`}
                                                     >
                                                         <button
-                                                            onClick={() => handleBookie("t8", item?.nat, "red", item?.l3, item?.gtype, "Lay", "", "l3", index)}
+                                                            onClick={() => handleBookie("t8", item?.rname, "red", item?.l3, item?.gtype, "Lay", "", "l3", index)}
                                                             className='py-[3px]'
                                                         >
                                                             <p className="px-1 leading-4  text-[12px] font-[700]">{item?.l3 || 0}</p>
@@ -2470,7 +2518,7 @@ function Booking() {
 
                                                 </tr>
 
-                                                {showBook.t8.name == item?.nat &&
+                                                {showBook.t8.name == item?.rname &&
                                                     <tr className={` ${showBook.t8.color == 'red' ? 'lg:bg-[#FAA9BA] bg-[#F1D5DC]' : 'lg:bg-[#72BBEF] bg-[#BEDDF4]'} border-b border-gray-300`}>
                                                         <td colSpan={7} className=' pt-1 '>
                                                             <div className="grid grid-cols-4 gap-2 lg:px-3 px-0.5 pb-0.5 border-b border-[#72BBEF] max-lg:grid-cols-2">
@@ -2520,7 +2568,7 @@ function Booking() {
 
                                                                 {/* Place Bet Button */}
                                                                 <button
-                                                                    onClick={() => handlePlaceBet("t8", item?.gtype, item?.nat, t8Data.length)}
+                                                                   onClick={() => handlePlaceBet("t8", t8Data?.market, item?.rname, t8Data?.oddDatas?.length)}
                                                                     // disabled={item?.mstatus !== "OPEN"}
                                                                     className={`flex max-lg:hidden justify-center items-center h-full border rounded-md border-gray-600 
                                                                     ${showBook.t8.amount
@@ -2550,7 +2598,7 @@ function Booking() {
 
                                                                 </button>
                                                                 <button
-                                                                    onClick={() => handlePlaceBet("t8", item?.gtype, item?.nat, t8Data.length)}
+                                                                    onClick={() => handlePlaceBet("t8", t8Data?.market, item?.rname, t8Data?.oddDatas?.length)}
                                                                     // disabled={item?.mstatus !== "OPEN"}
                                                                     className={`flex  justify-center items-center h-full bg-[#577094] border rounded-md border-gray-600
                                                                         ${showBook.t8.amount
@@ -2587,7 +2635,7 @@ function Booking() {
 
                     {/* bookmaker */}
                     {
-                        t2Data?.length > 0 &&
+                        t2Data?.bm1?.oddDatas?.length > 0 &&
                         <div className='my-2'>
                             <div className='flex justify-between'>
                                 <div className='flex'>
@@ -2613,9 +2661,9 @@ function Booking() {
                                             {/* only small device  */}
                                             <th scope="col" className="px-2 table-cell lg:hidden py-1 ">
                                                 <div className='bg-[#BED5D8] text-center'>
-                                                    <span className='text-[#6987B1]'>min/max</span>  {t2Data?.[0]?.bm1?.[0]?.min === 0 && t2Data?.[0]?.bm1?.[0]?.max === 0
+                                                    <span className='text-[#6987B1]'>min/max</span>  {t2Data?.bm1?.min === 0 && t2Data?.bm1?.max === 0
                                                         ? "1-0"
-                                                        : `${t2Data?.[0]?.bm1?.[0]?.min} - ${t2Data?.[0]?.bm1?.[0]?.max}`}
+                                                        : `${t2Data?.bm1?.min} - ${t2Data?.bm1?.max}`}
 
                                                 </div>
                                             </th>
@@ -2629,23 +2677,24 @@ function Booking() {
                                             {/* hidden in small device */}
                                             <th colSpan={2} scope="col" className="px-2 hidden sm:table-cell py-1 ">
                                                 <div className='bg-[#D7E8F4] text-center '>
-                                                    min/max  {t2Data?.[0]?.bm1?.[0]?.min === 0 && t2Data?.[0]?.bm1?.[0]?.max === 0
+                                                    min/max   {t2Data?.bm1?.min === 0 && t2Data?.bm1?.max === 0
                                                         ? "1-0"
-                                                        : `${t2Data?.[0]?.bm1?.[0]?.min} - ${t2Data?.[0]?.bm1?.[0]?.max}`}
+                                                        : `${t2Data?.bm1?.min} - ${t2Data?.bm1?.max}`}
+
 
                                                 </div>
                                             </th>
 
                                         </tr>
                                     </thead>
-                                    {t2Data?.[0]?.bm1?.map((item, index) =>
+                                    {t2Data?.bm1?.oddDatas.map((item, index) =>
                                         <tbody key={index}>
 
                                             <tr className="bg-white border-b border-gray-300">
 
                                                 <td className="px-2 py-0.5 text-nowrap ">
                                                     <a className="flex gap-x-2 flex-wrap capitalize text-gray-900 font-semibold ">
-                                                        {item?.nat}
+                                                        {item?.rname}
                                                     </a>
                                                     {!previousBet?.["Bookmaker"] ? (
                                                         <>
@@ -2653,13 +2702,13 @@ function Booking() {
                                                                 <>
 
                                                                     {betType === "Back" ? (
-                                                                        <p className={`${showBook.t2.name === item?.nat ? 'text-[#45A255]' : 'text-red-500'} font-[700]`}>
-                                                                            {showBook.t2.name === item?.nat ? `(${(Number(showBook.t2.rate) * Number(showBook.t2.amount) / 100).toFixed(2)})`
+                                                                        <p className={`${showBook.t2.name === item?.rname ? 'text-[#45A255]' : 'text-red-500'} font-[700]`}>
+                                                                            {showBook.t2.name === item?.rname ? `(${(Number(showBook.t2.rate) * Number(showBook.t2.amount) / 100).toFixed(2)})`
                                                                                 : `(${Number(showBook.t2.amount).toFixed(2)}) `}
                                                                         </p>
                                                                     ) : (
-                                                                        <p className={`${showBook.t2.name === item?.nat ? 'text-red-500' : 'text-[#45A255]'} font-[700]`}>
-                                                                            {showBook.t2.name === item?.nat ? `(${(Number(showBook.t2.rate) * Number(showBook.t2.amount) / 100).toFixed(2)})` : `(${Number(showBook.t2.amount).toFixed(2)}) `}
+                                                                        <p className={`${showBook.t2.name === item?.rname ? 'text-red-500' : 'text-[#45A255]'} font-[700]`}>
+                                                                            {showBook.t2.name === item?.rname ? `(${(Number(showBook.t2.rate) * Number(showBook.t2.amount) / 100).toFixed(2)})` : `(${Number(showBook.t2.amount).toFixed(2)}) `}
                                                                         </p>
                                                                     )}
                                                                 </>
@@ -2676,9 +2725,9 @@ function Booking() {
                                                                         {previousBet?.["Bookmaker"]?.type === "Back" ? (
                                                                             <div className="flex items-center">
                                                                                 <FaLongArrowAltRight
-                                                                                    className={`mr-2 ${previousBet?.["Bookmaker"]?.selection === item?.nat ? 'text-[#45A255]' : 'text-red-500'}`}
+                                                                                    className={`mr-2 ${previousBet?.["Bookmaker"]?.selection === item?.rname ? 'text-[#45A255]' : 'text-red-500'}`}
                                                                                 />
-                                                                                <p className={`font-[700] ${previousBet?.["Bookmaker"]?.selection === item?.nat ? 'text-[#45A255]' : 'text-red-500'}`}>
+                                                                                <p className={`font-[700] ${previousBet?.["Bookmaker"]?.selection === item?.rname ? 'text-[#45A255]' : 'text-red-500'}`}>
 
                                                                                     {index === 0 ?
                                                                                         Number(previousBet?.["Bookmaker"]?.previous_bet1).toFixed(2)
@@ -2690,9 +2739,9 @@ function Booking() {
                                                                         ) : (
                                                                             <div className="flex items-center">
                                                                                 <FaLongArrowAltRight
-                                                                                    className={`mr-2 ${previousBet?.["Bookmaker"]?.selection === item?.nat ? 'text-red-500' : 'text-[#45A255]'}`}
+                                                                                    className={`mr-2 ${previousBet?.["Bookmaker"]?.selection === item?.rname ? 'text-red-500' : 'text-[#45A255]'}`}
                                                                                 />
-                                                                                <p className={`font-[700] ${previousBet?.["Bookmaker"]?.selection === item?.nat ? 'text-red-500' : 'text-[#45A255]'}`}>
+                                                                                <p className={`font-[700] ${previousBet?.["Bookmaker"]?.selection === item?.rname ? 'text-red-500' : 'text-[#45A255]'}`}>
                                                                                     {index === 0 ?
                                                                                         Number(previousBet?.["Bookmaker"]?.previous_bet1).toFixed(2)
                                                                                         :
@@ -2706,25 +2755,25 @@ function Booking() {
                                                                             <>
                                                                                 {betType === "Back" ? (
                                                                                     <>
-                                                                                        {showBook.t2.name === item?.nat ? (
-                                                                                            <p className={`${showBook.t2.name === item?.nat ? 'text-[#45A255]' : 'text-red-500'} font-[700]`}>
+                                                                                        {showBook.t2.name === item?.rname ? (
+                                                                                            <p className={`${showBook.t2.name === item?.rname ? 'text-[#45A255]' : 'text-red-500'} font-[700]`}>
                                                                                                 {`(${index === 0 ? Number(previousBet?.["Bookmaker"]?.previous_bet1) : Number(previousBet?.["Bookmaker"]?.previous_bet2)} + ${Number(showBook.t2.rate)})`}
                                                                                             </p>
                                                                                         ) : (
-                                                                                            <p className={`${showBook.t2.name === item?.nat ? 'text-[#45A255]' : 'text-red-500'} font-[700]`}>
+                                                                                            <p className={`${showBook.t2.name === item?.rname ? 'text-[#45A255]' : 'text-red-500'} font-[700]`}>
                                                                                                 {`(${index === 0 ? Number(previousBet?.["Bookmaker"]?.previous_bet1) : Number(previousBet?.["Bookmaker"]?.previous_bet2)} - ${Number(showBook?.t2?.amount)})`}
                                                                                             </p>
                                                                                         )}
                                                                                     </>
                                                                                 ) : (
                                                                                     <>
-                                                                                        {showBook.t2.name === item?.nat ? (
-                                                                                            <p className={`${showBook.t2.name === item?.nat ? 'text-red-500' : 'text-[#45A255]'} font-[700]`}>
+                                                                                        {showBook.t2.name === item?.rname ? (
+                                                                                            <p className={`${showBook.t2.name === item?.rname ? 'text-red-500' : 'text-[#45A255]'} font-[700]`}>
 
                                                                                                 {`(${index === 0 ? Number(previousBet?.["Bookmaker"]?.previous_bet1) : Number(previousBet?.["Bookmaker"]?.previous_bet2)} - ${Number(showBook.t2.rate)})`}
                                                                                             </p>
                                                                                         ) : (
-                                                                                            <p className={`${showBook.t2.name === item?.nat ? 'text-red-500' : 'text-[#45A255]'} font-[700]`}>
+                                                                                            <p className={`${showBook.t2.name === item?.rname ? 'text-red-500' : 'text-[#45A255]'} font-[700]`}>
                                                                                                 {`(${index === 0 ? Number(previousBet?.["Bookmaker"]?.previous_bet1) : Number(previousBet?.["Bookmaker"]?.previous_bet2)} + ${Number(showBook?.t2?.amount)})`}
                                                                                             </p>
                                                                                         )}
@@ -2742,7 +2791,7 @@ function Booking() {
                                                     className={`${showBook.t2.boxname == item?.b3 ? 'bg-[#2A8EE1] text-white' : 'bg-[#D7E8F4] text-gray-900'} hidden lg:table-cell   font-semibold text-center w-[60px] lg:w-[100px]`}
                                                 >
                                                     <button
-                                                        onClick={() => handleBookie("t2", item?.nat, "blue", item?.b3, item?.mname, "Back", "", "b3", index)}
+                                                        onClick={() => handleBookie("t2", item?.rname, "blue", item?.b3, item?.mname, "Back", "", "b3", index)}
                                                         disabled={!item?.b3}
 
                                                     >
@@ -2750,7 +2799,9 @@ function Booking() {
                                                             <p className="px-1 leading-4  font-[700] text-[12px]">{item?.b3 || '-'}</p>
                                                             <p className="px-1 leading-4  font-light text-gray-800 text-[11px]">{item?.bs3 || ''}</p>
                                                         </div>
-
+                                                        {item?.status != "ACTIVE" ? <div className="absolute inset-0 flex items-center justify-center bg-red-500 bg-opacity-20">
+                                                                    <p className="text-red-100 text-[10px] sm:text-xs md:text-sm font-bold">SUSPENDED</p>
+                                                                </div> :"" }
                                                     </button>
                                                 </td>
 
@@ -2759,7 +2810,7 @@ function Booking() {
                                                     className={`${showBook.t2.boxname == item?.b2 ? 'bg-[#2A8EE1] text-white' : 'bg-[#B7D5EA] text-gray-900'} hidden lg:table-cell  font-semibold text-center  w-[60px] lg:w-[100px]`}
                                                 >
                                                     <button
-                                                        onClick={() => handleBookie("t2", item?.nat, "blue", item?.b2, item?.mname, "Back", "", "b2", index)}
+                                                        onClick={() => handleBookie("t2", item?.rname, "blue", item?.b2, item?.mname, "Back", "", "b2", index)}
                                                         disabled={!item?.b2}
                                                     >
                                                         <div className='py-[3px]'>
@@ -2771,10 +2822,10 @@ function Booking() {
                                                 </td>
 
                                                 <td
-                                                    onClick={() => handleBookie("t2", item?.nat, "blue", item?.b1, item?.mname, "Back", "", "b1", index)}
+                                                    onClick={() => handleBookie("t2", item?.rname, "blue", item?.b1, item?.mname, "Back", "", "b1", index)}
                                                     className={`${showBook.t2.boxname == item?.b1 ? 'bg-[#2A8EE1] text-white' : 'bg-[#72BBEF] text-gray-900'} relative font-semibold text-center w-[60px] lg:w-[100px]`}
                                                 >
-                                                    {item.s == "ACTIVE" ? (
+                                                    {item.status == "ACTIVE" ? (
                                                         <div className='py-[3px]'>
                                                             <p className="px-1 leading-4 font-[700] text-[12px]">{item?.b1 || '-'}</p>
                                                             <p className="px-1 leading-4 font-light text-gray-800 text-[11px]">{item?.bs1 || ''}</p>
@@ -2784,9 +2835,9 @@ function Booking() {
                                                             <p className="px-1 leading-4 font-[700] text-[12px]">{item?.b1 || '-'}</p>
                                                             <p className="px-1 leading-4 font-light text-gray-800 text-[11px]">{item?.bs1 || ''}</p>
                                                             {/* Suspended Overlay */}
-                                                            <div className="absolute inset-0 flex items-center justify-center w-full h-full  bg-opacity-20  bg-[#b3ddf5)]">
-                                                                <p className="text-red-300 text-[10px]  sm:text-xs md:text- py-4 px-4 font-bold">SUSPENDED</p>
-                                                            </div>
+                                                            {item?.status != "ACTIVE" ? <div className="absolute inset-0 flex items-center justify-center bg-red-500 bg-opacity-20">
+                                                                    <p className="text-red-100 text-[10px] sm:text-xs md:text-sm font-bold">SUSPENDED</p>
+                                                                </div> :"" }
                                                         </div>
                                                     )}
                                                 </td>
@@ -2794,7 +2845,7 @@ function Booking() {
                                                     className={`${showBook.t2.boxname == item?.l1 ? 'bg-[#F4496D] text-white' : 'bg-[#FAA9BA] text-gray-900'} relative py-0.5 font-semibold text-center w-[60px] lg:w-[100px]`}
                                                 >
                                                     <button
-                                                        onClick={() => handleBookie("t2", item?.nat, "red", item?.l1, item?.mname, "Lay", "", "l1", index)}
+                                                        onClick={() => handleBookie("t2", item?.rname, "red", item?.l1, item?.mname, "Lay", "", "l1", index)}
                                                         disabled={!item?.l1}
                                                     >
                                                         {item.s == "ACTIVE" ? (
@@ -2807,9 +2858,10 @@ function Booking() {
                                                                 <p className="px-1 leading-4 font-[700] text-[12px]">{item?.l1 || '-'}</p>
                                                                 <p className="px-1 leading-4 font-light text-gray-800 text-[11px]">{item?.ls1 || ''}</p>
                                                                 {/* Suspended Overlay */}
-                                                                <div className="absolute inset-0 flex items-center justify-center bg-red-500 bg-opacity-20">
+                                                                {item?.status != "ACTIVE" ? <div className="absolute inset-0 flex items-center justify-center bg-red-500 bg-opacity-20">
                                                                     <p className="text-red-100 text-[10px] sm:text-xs md:text-sm font-bold">SUSPENDED</p>
-                                                                </div>
+                                                                </div> :"" }
+                                                                
                                                             </div>
                                                         )}
                                                     </button>
@@ -2819,13 +2871,15 @@ function Booking() {
                                                     className={`${showBook.t2.boxname == item?.l2 ? 'bg-[#F4496D] text-white' : 'bg-[#EFD3D9] text-gray-900'} hidden lg:table-cell  py-0.5 font-semibold text-center w-[60px] lg:w-[100px]`}
                                                 >
                                                     <button
-                                                        onClick={() => handleBookie("t2", item?.nat, "red", item?.l2, item?.mname, "Lay", "", "l2", index)}
+                                                        onClick={() => handleBookie("t2", item?.rname, "red", item?.l2, item?.mname, "Lay", "", "l2", index)}
                                                         disabled={!item?.l2}>
                                                         <div className='py-[3px]'>
                                                             <p className="px-1 leading-4   font-[700] text-[12px]">{item?.l2 || '-'}</p>
                                                             <p className="px-1 leading-4  font-light text-gray-800  text-[11px]">{item?.ls2 || ''}</p>
                                                         </div>
-
+                                                        {item?.status != "ACTIVE" ? <div className="absolute inset-0 flex items-center justify-center bg-red-500 bg-opacity-20">
+                                                                    <p className="text-red-100 text-[10px] sm:text-xs md:text-sm font-bold">SUSPENDED</p>
+                                                                </div> :"" }
                                                     </button>
                                                 </td>
 
@@ -2834,21 +2888,23 @@ function Booking() {
                                                     className={`${showBook.t2.boxname == item?.l3 ? 'bg-[#F4496D] text-white' : 'bg-[#F6E6EA] text-gray-900'}   hidden lg:table-cell py-0.5 font-semibold text-center w-[60px] lg:w-[100px]`}
                                                 >
                                                     <button
-                                                        onClick={() => handleBookie("t2", item?.nat, "red", item?.l3, item?.mname, "Lay", "", "l3", index)}
+                                                        onClick={() => handleBookie("t2", item?.rname, "red", item?.l3, item?.mname, "Lay", "", "l3", index)}
                                                         disabled={!item?.l3}
                                                     >
                                                         <div className='py-[3px]'>
                                                             <p className="px-1 leading-4   font-[700] text-[12px]">{item?.l3 || '-'}</p>
                                                             <p className="px-1 font-light text-gray-800 leading-4   text-[11px]">{item?.ls3 || ""}</p>
                                                         </div>
-
+                                                        {item?.status != "ACTIVE" ? <div className="absolute inset-0 flex items-center justify-center bg-red-500 bg-opacity-20">
+                                                                    <p className="text-red-100 text-[10px] sm:text-xs md:text-sm font-bold">SUSPENDED</p>
+                                                                </div> :"" }
                                                     </button>
                                                 </td>
 
                                             </tr>
 
 
-                                            {showBook.t2.name == item?.nat &&
+                                            {showBook.t2.name == item?.rname &&
                                                 <tr className={` ${showBook.t2.color == 'red' ? 'lg:bg-[#FAA9BA] bg-[#F1D5DC]' : 'lg:bg-[#72BBEF] bg-[#BEDDF4]'} border-b border-gray-300`}>
                                                     <td colSpan={7} className=' pt-1 '>
                                                         <div className="grid grid-cols-4 gap-2 lg:px-3 px-0.5 pb-0.5 border-b border-[#72BBEF] max-lg:grid-cols-2">
@@ -2898,8 +2954,9 @@ function Booking() {
 
                                                             {/* Place Bet Button */}
                                                             <button
-                                                                onClick={() => handlePlaceBet("t2", item?.mname, item?.nat, t2Data[0]?.bm1?.length)}
-                                                                disabled={item?.s == "SUSPENDED"}
+
+                                                                onClick={() => handlePlaceBet("t2", t2Data?.bm1.gtype, item?.rname, t2Data[0]?.bm1?.oddDatas.length)}
+                                                                // disabled={item?.s == "SUSPENDED"}
                                                                 className={`flex max-lg:hidden justify-center items-center h-full border rounded-md border-gray-600 
                                                                 ${showBook.t2.amount
                                                                         ? 'bg-gradient-to-t from-[#1e714f] to-[#16a34a]'
@@ -2928,13 +2985,13 @@ function Booking() {
 
                                                             </button>
                                                             <button
-                                                                onClick={() => handlePlaceBet("t2", item?.mname, item?.nat, t2Data[0]?.bm1?.length)}
+                                                                onClick={() => handlePlaceBet("t2", t2Data?.bm1.gtype, item?.rname, t2Data[0]?.bm1?.oddDatas.length)}
                                                                 className={`flex  justify-center items-center h-full bg-[#577094] border rounded-md border-gray-600
                                                                     ${showBook.t2.amount
                                                                         ? 'bg-gradient-to-t from-[#1e714f] to-[#16a34a]'
                                                                         : 'bg-gradient-to-t from-[#626278] to-[#7380AD]'
                                                                     }`}
-                                                                disabled={item?.s == "SUSPENDED"}
+                                                                // disabled={item?.s == "SUSPENDED"}
 
                                                             >
                                                                 <p className='   px-7 py-1 text-center font-extrabold text-white text-lg'>Place Bet</p>
@@ -2948,7 +3005,7 @@ function Booking() {
 
                                             }
                                             {
-                                                item?.s !== "SUSPENDED" ? "" :
+                                                item?.status !== "SUSPENDED" ? "" :
                                                     <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-white bg-opacity-80 border-2 border-red-500">
                                                         <p className="text-red-500 text-3xl font-bold">SUSPENDED</p>
                                                     </div>
@@ -3015,14 +3072,14 @@ function Booking() {
 
                                                 <td className="px-2 py-0.5 lg:text-nowrap ">
                                                     <a className="flex gap-x-2 flex-wrap capitalize text-gray-900 font-semibold ">
-                                                        {item?.nat}
+                                                        {item?.rname}
                                                     </a>
                                                     {lastBetValueFANCY?.fancy1?.length < 0 ? (
                                                         <>
 
                                                             {showBook.t2.amount > 0 && (
-                                                                        <p className={`${showBook.t3.name === item?.nat ? 'text-[#45A255]' : 'text-red-500'} text-center font-[700]`}>
-                                                                            {showBook.t3.name === item?.nat ? `(${showBook.t3.betAmount})` : null}
+                                                                        <p className={`${showBook.t3.name === item?.rname ? 'text-[#45A255]' : 'text-red-500'} text-center font-[700]`}>
+                                                                            {showBook.t3.name === item?.rname ? `(${showBook.t3.betAmount})` : null}
                                                                         </p>
                                                                     )}
                                                         </>
@@ -3051,7 +3108,7 @@ function Booking() {
                                                     className={`${showBook.t4.boxname == item?.b1 ? 'bg-[#2A8EE1] text-white' : 'bg-[#72BBEF] text-gray-900'}   font-semibold text-center w-[60px] lg:w-[100px] relative`}
                                                 >
                                                     <button
-                                                        onClick={() => handleBookie("t4", item?.nat, "blue", item?.b1, item?.gtype, "Back", "", "b1", index)}
+                                                        onClick={() => handleBookie("t4", item?.rname, "blue", item?.b1, item?.gtype, "Back", "", "b1", index)}
                                                         disabled={!item?.b1}
                                                         className='py-[3px]'
                                                     >
@@ -3070,7 +3127,7 @@ function Booking() {
                                                     className={`${showBook.t4.boxname == item?.l1 ? 'bg-[#F4496D] text-white' : 'bg-[#FAA9BA] text-gray-900'}  py-0.5 font-semibold text-center w-[60px] lg:w-[100px] relative`}
                                                 >
                                                     <button
-                                                        onClick={() => handleBookie("t4", item?.nat, "red", item?.l1, item?.gtype, "Lay", "", "l1", index)}
+                                                        onClick={() => handleBookie("t4", item?.rname, "red", item?.l1, item?.gtype, "Lay", "", "l1", index)}
                                                         disabled={!item?.l1}
                                                     >
                                                         <div className='py-[3px]'>
@@ -3096,7 +3153,7 @@ function Booking() {
                                             </tr>
 
 
-                                            {showBook.t4.name == item?.nat &&
+                                            {showBook.t4.name == item?.rname &&
                                                 <tr className={` ${showBook.t4.color == 'red' ? 'lg:bg-[#FAA9BA] bg-[#F1D5DC]' : 'lg:bg-[#72BBEF] bg-[#BEDDF4]'} border-b border-gray-300`}>
                                                     <td colSpan={4} className=' pt-1 '>
                                                         <div className="grid grid-cols-4 gap-2 lg:px-3 px-0.5 pb-0.5 border-b border-[#72BBEF] max-lg:grid-cols-2">
@@ -3145,7 +3202,7 @@ function Booking() {
                                                             </div>
                                                           
                                                             <button
-                                                                onClick={() => handlePlaceBet("t4", item?.gtype, item?.nat,)}
+                                                                onClick={() => handlePlaceBet("t4", item?.gtype, item?.rname,)}
                                                                 disabled={item?.gstatus}
                                                                 className={`flex max-lg:hidden justify-center items-center h-full border rounded-md border-gray-600 
                                                                 ${showBook.t4.amount
@@ -3176,7 +3233,7 @@ function Booking() {
 
 
                                                             <button
-                                                                onClick={() => handlePlaceBet("t4", item?.gtype, item?.nat,)}
+                                                                onClick={() => handlePlaceBet("t4", item?.gtype, item?.rname,)}
                                                                 disabled={item?.gstatus}
                                                                 className={`flex  justify-center items-center h-full bg-[#577094] border rounded-md border-gray-600
                                                                     ${showBook.t4.amount
@@ -3298,7 +3355,7 @@ function Booking() {
 
                         {/* Fancy data table  two option All and fancy*/}
                         {
-                            t3Data?.length > 0 && (optionFancyBet['All'] || optionFancyBet['Fancy']) &&
+                            t3Data?.oddDatas?.length > 0 && (optionFancyBet['All'] || optionFancyBet['Fancy']) &&
                             <div className='my-4'>
                                 {/* <div className='flex justify-between'>
                             <div className='flex'>
@@ -3338,7 +3395,8 @@ function Booking() {
 
                                             </tr>
                                         </thead>
-                                        {t3Data?.map((item, index) =>
+
+                                        {t3Data.oddDatas?.map((item, index) =>
                                             <tbody key={index}>
                                                 <tr className="bg-white border-b border-gray-300 relative">
                                                     <td className="px-2 py-0.5 lg:text-nowrap">
@@ -3348,7 +3406,7 @@ function Booking() {
                                                                     className="capitalize text-gray-900 font-semibold"
                                                                     onClick={() => fancyBet(index)}
                                                                 >
-                                                                    {item.nat.replace(/\([^)]*\)/, ' ').trim()}
+                                                                    {item.rname}
                                                                 </a>
 
                                                                 {lastBetValueFANCY?.fancyBetListData?.length > 0 && (
@@ -3388,7 +3446,7 @@ function Booking() {
                                                         className={`${showBook.t3.boxname == item?.l1 ? 'bg-[#F4496D] text-white' : 'bg-[#FAA9BA] text-gray-900'}  py-0.5 font-semibold text-center w-[60px] lg:w-[100px] relative`}
                                                     >
                                                         <button
-                                                            onClick={() => handleBookie("t3", item?.nat, "red", `${item?.l1}/${item?.ls1}`, item?.mname, "No", item?.ls1, "", index)}
+                                                            onClick={() => handleBookie("t3", item?.rname, "red", `${item?.l1}/${item?.ls1}`, item?.mname, "No", item?.ls1, "", index)}
                                                             disabled={!item?.l1}
                                                         >
                                                             <div className='py-[3px]'>
@@ -3410,7 +3468,7 @@ function Booking() {
                                                         className={`${showBook.t3.boxname == item?.b1 ? 'bg-[#2A8EE1] text-white' : 'bg-[#72BBEF] text-gray-900'}   font-semibold text-center w-[60px] lg:w-[100px] relative`}
                                                     >
                                                         <button
-                                                            onClick={() => handleBookie("t3", item?.nat, "blue", `${item?.b1}/${item?.bs1}`, item?.mname, "Yes", item?.bs1, "", index)}
+                                                            onClick={() => handleBookie("t3", item?.rname, "blue", `${item?.b1}/${item?.bs1}`, item?.mname, "Yes", item?.bs1, "", index)}
                                                             disabled={!item?.b1}
                                                             className='py-[3px]'
                                                         >
@@ -3444,7 +3502,7 @@ function Booking() {
                                                 </tr>
 
 
-                                                {showBook.t3.name == item?.nat &&
+                                                {showBook.t3.name == item?.rname &&
                                                     <tr className={` ${showBook.t3.color == 'red' ? 'lg:bg-[#FAA9BA] bg-[#F1D5DC]' : 'lg:bg-[#72BBEF] bg-[#BEDDF4]'} border-b border-gray-300`}>
                                                         <td colSpan={4} className=' pt-1 '>
                                                             <div className="grid grid-cols-4 gap-2 lg:px-3 px-0.5 pb-0.5 border-b border-[#72BBEF] max-lg:grid-cols-2">
@@ -3496,7 +3554,7 @@ function Booking() {
 
                                                                 {/* Place Bet Button */}
                                                                 <button
-                                                                    onClick={() => handlePlaceBet("t3", item?.gtype, item?.nat,)}
+                                                                    onClick={() => handlePlaceBet("t3", item?.gtype, item?.rname,)}
                                                                     disabled={item?.gstatus}
                                                                     className={`flex max-lg:hidden justify-center items-center h-full border rounded-md border-gray-600
                                                                     ${showBook.t3.amount
@@ -3526,7 +3584,7 @@ function Booking() {
 
                                                                 </button>
                                                                 <button
-                                                                    onClick={() => handlePlaceBet("t3", item?.gtype, item?.nat,)}
+                                                                    onClick={() => handlePlaceBet("t3", item?.gtype, item?.rname,)}
                                                                     disabled={item?.gstatus}
 
                                                                     className={`flex  justify-center items-center h-full bg-[#577094] border rounded-md border-gray-600
@@ -3642,11 +3700,11 @@ function Booking() {
 
                                                     <td className="px-2 py-0.5 lg:text-nowrap ">
                                                         <a className="flex gap-x-2 flex-wrap capitalize text-gray-900 font-semibold ">
-                                                            {item?.nat}
+                                                            {item?.rname}
                                                         </a>
                                                         {
                                                             showBook.t6.amount > 0 &&
-                                                            <p className={`${showBook.t6.name == item?.nat ? 'text-[#45A255]' : 'text-red-500'} text-center font-[700]`}>{showBook.t6.name == item?.nat ? `(${showBook.t6.betAmount})` : `(${showBook.t6.amount})`}</p>
+                                                            <p className={`${showBook.t6.name == item?.rname ? 'text-[#45A255]' : 'text-red-500'} text-center font-[700]`}>{showBook.t6.name == item?.rname ? `(${showBook.t6.betAmount})` : `(${showBook.t6.amount})`}</p>
                                                         }
                                                     </td>
 
@@ -3654,7 +3712,7 @@ function Booking() {
                                                         className={`${showBook.t6.boxname == item?.b1 ? 'bg-[#2A8EE1] text-white' : 'bg-[#72BBEF] text-gray-900'}   font-semibold text-center w-[60px] lg:w-[100px] relative`}
                                                     >
                                                         <button
-                                                            onClick={() => handleBookie("t6", item?.nat, "blue", item?.b1, item?.mname, "Back")}
+                                                            onClick={() => handleBookie("t6", item?.rname, "blue", item?.b1, item?.mname, "Back")}
                                                             disabled={!item?.b1}
                                                             className='py-[3px]'
                                                         >
@@ -3674,7 +3732,7 @@ function Booking() {
                                                         className={`${showBook.t6.boxname == item?.l1 ? 'bg-[#F4496D] text-white' : 'bg-[#FAA9BA] text-gray-900'}  py-0.5 font-semibold text-center w-[60px] lg:w-[100px] relative`}
                                                     >
                                                         <button
-                                                            onClick={() => handleBookie("t6", item?.nat, "red", item?.l1, item?.mname, "Lay")}
+                                                            onClick={() => handleBookie("t6", item?.rname, "red", item?.l1, item?.mname, "Lay")}
                                                             disabled={!item?.l1}
                                                         >
                                                             <div className='py-[3px]'>
@@ -3708,7 +3766,7 @@ function Booking() {
                                                 </tr>
 
 
-                                                {showBook.t6.name == item?.nat &&
+                                                {showBook.t6.name == item?.rname &&
                                                     <tr className={` ${showBook.t6.color == 'red' ? 'lg:bg-[#FAA9BA] bg-[#F1D5DC]' : 'lg:bg-[#72BBEF] bg-[#BEDDF4]'} border-b border-gray-300`}>
                                                         <td colSpan={4} className=' pt-1 '>
                                                             <div className="grid grid-cols-4 gap-2 lg:px-3 px-0.5 pb-0.5 border-b border-[#72BBEF] max-lg:grid-cols-2">
@@ -3758,7 +3816,7 @@ function Booking() {
 
                                                                 
                                                                 <button
-                                                                    onClick={() => handlePlaceBet("t6", item?.mname, item?.nat,)}
+                                                                    onClick={() => handlePlaceBet("t6", item?.mname, item?.rname,)}
                                                                     disabled={item?.gstatus}
                                                                     className={`flex max-lg:hidden justify-center items-center h-full border rounded-md border-gray-600 ${showBook.t6.color == 'red' ? 'bg-gradient-to-t from-[#626278] to-[#7380AD]' : 'bg-gradient-to-t from-[#1e714f] to-[#16a34a]'} `}>
                                                                     <p className="px-7 py-1 text-center font-extrabold text-white text-lg">Place Bet</p>
@@ -3784,7 +3842,7 @@ function Booking() {
 
                                                                 </button>
                                                                 <button
-                                                                    onClick={() => handlePlaceBet("t6", item?.mname, item?.nat,)}
+                                                                    onClick={() => handlePlaceBet("t6", item?.mname, item?.rname,)}
                                                                     disabled={item?.gstatus}
                                                                     className='flex  justify-center items-center h-full bg-[#577094] border rounded-md border-gray-600'>
                                                                     <p className='   px-7 py-1 text-center font-extrabold text-white text-lg'>Place Bet</p>

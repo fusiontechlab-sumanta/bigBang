@@ -34,7 +34,7 @@ function InPlay() {
     socket.emit('getLiveData', { type: 'live' });
     // Register the event listener for live data updates
     const handleLiveDataMatch = (data) => {
-      // console.log(data, "gggggggggg");
+      console.log(data, "gggggggggg");
       setSportData(data?.matches || [])
       setLoading(false)
     };
@@ -92,17 +92,17 @@ function InPlay() {
                   {/* Name and Link */}
                   <td className="px-2 py-2 text-nowrap text-center">
                     <Link
-                      to={`/fullmarket/${item?.eventType.name}/${item.event.id}`}
+                      to={`/fullmarket/${category}/${item?.matchDetails?.eventId}`}
                       className="flex gap-x-2 flex-wrap text-[#3a8dc5] font-semibold cursor-pointer text-[4vw] lg:text-[12px]">
-                      {item?.event?.name}
-                      {matchLive(item?.event?.id) ? (
+                      {item?.matchDetails?.eventName}
+                      {matchLive(item?.matchDetails?.eventId) ? (
                         <span className="animate-color-change text-gray-400 font-bold text-sm">
                           In Play
                         </span>
                       )
                         :
                         <span className="text-gray-400 font-normal text-sm">
-                          {formatDateTime(item?.event?.openDate)}
+                          {category == "Cricket" ? formatDateTime(item?.matchDetails?.eventTime) : formatDateTime(item?.matchDetails?.eventDate)}
                         </span>
                       }
                     </Link>
@@ -114,57 +114,21 @@ function InPlay() {
                   {/* Scores */}
 
                   {/* Score Columns */}
-                  {
-                    category === "Cricket" ? (
-                      Array.from({ length: 3 }).map((_, idx) => {
-                        const oddItem = item?.oddFancy?.oddFancy?.t1?.[0]?.[idx]; // Renamed to oddItem
-                        return (
-                          <td key={idx} className="text-black text-[12px] lg:text-[11px] hidden sm:table-cell px-2 py-2 font-[700] text-center">
-                            <span className="px-2 py-1 bg-[#72BBEF]">{oddItem ? oddItem.b1 : "0.0"}</span>
-                            <span className="px-2 py-1 bg-[#FAA9BA]">{oddItem ? oddItem.l1 : "0.0"}</span>
-                          </td>
-                        );
-                      })
-                    ) : (
-                      Array.from({ length: 3 }).map((_, idx) => {
-                        const oddItem = item?.oddFancy?.oddFancy?.[0]?.runners; // Get runners array
-                        // console.log(oddItem, "ttttttt--");
-
-                        return (
-                          <td key={idx} className="text-black text-[12px] lg:text-[11px] hidden sm:table-cell px-2 py-2 font-[700] text-center">
-                            {idx === 0 ? (
-                              <>
-                                <span className="px-2 py-1 bg-[#72BBEF]">
-                                  {oddItem?.[0]?.ex?.availableToBack?.[0]?.price ?? "0.0"}
-                                </span>
-                                <span className="px-2 py-1 bg-[#FAA9BA]">
-                                  {oddItem?.[0]?.ex?.availableToLay?.[0]?.price ?? "0.0"}
-                                </span>
-                              </>
-                            ) : idx === 1 ? (
-                              <>
-                                <span className="px-2 py-1 bg-[#72BBEF]">
-                                  {oddItem?.[1]?.ex?.availableToBack?.[0]?.price ?? "0.0"}
-                                </span>
-                                <span className="px-2 py-1 bg-[#FAA9BA]">
-                                  {oddItem?.[1]?.ex?.availableToLay?.[0]?.price ?? "0.0"}
-                                </span>
-                              </>
-                            ) : (
-                              <>
-                                <span className="px-2 py-1 bg-[#72BBEF]">
-                                  {oddItem?.[2]?.ex?.availableToBack?.[0]?.price ?? "0.0"}
-                                </span>
-                                <span className="px-2 py-1 bg-[#FAA9BA]">
-                                  {oddItem?.[2]?.ex?.availableToLay?.[0]?.price ?? "0.0"}
-                                </span>
-                              </>
-                            )}
-                          </td>
-                        );
-                      })
-                    )
-                  }
+                  {(item?.oddDatas?.slice(0, 3).concat(Array(3).fill({})).slice(0, 3)).map((oddItem, idx) => {
+                    return (
+                      <td
+                        key={idx}
+                        className="text-black text-[12px] lg:text-[11px] hidden sm:table-cell px-2 py-2 font-[700] text-center"
+                      >
+                        <span className="px-2 py-1 bg-[#72BBEF]">
+                          {oddItem?.b1 ?? "0.0"}
+                        </span>
+                        <span className="px-2 py-1 bg-[#FAA9BA]">
+                          {oddItem?.l1 ?? "0.0"}
+                        </span>
+                      </td>
+                    );
+                  })}
 
                   {/* Pin Icon */}
                   <td className="px-2 py-2 text-center">
@@ -182,31 +146,28 @@ function InPlay() {
   return (
     <>
       <ul className=" w-[100%] md:w-[50%] flex text-center justify-center md:justify-start py-[2px] md:mt-2 md:mb-5 text-[#3B5160] ">
-    <li
-        onClick={handleInplay}
-        className={`w-[32.5%] text-md md:text-sm  border py-2 md:py-1 cursor-pointer rounded-l-md border-black border-r-0 font-semibold ${
-            activeTab === "inplay" && "bg-[#3B5160] text-white"
-        }`}
-    >
-        In-Play
-    </li>
-    <li
-        onClick={handleToday}
-        className={`w-[32.5%] text-md md:text-sm py-2 md:py-1 border cursor-pointer border-black border-r-0  font-semibold ${
-            activeTab === "today" && "bg-[#3B5160] text-white"
-        }`}
-    >
-        Today
-    </li>
-    <li
-        onClick={handleTomorrow}
-        className={`w-[33%] text-md md:text-sm py-2 md:py-1 border cursor-pointer rounded-r-md border-black  font-semibold ${
-            activeTab === "tomorrow" && "bg-[#3B5160] text-white"
-        }`}
-    >
-        Tomorrow
-    </li>
-</ul>
+        <li
+          onClick={handleInplay}
+          className={`w-[32.5%] text-md md:text-sm  border py-2 md:py-1 cursor-pointer rounded-l-md border-black border-r-0 font-semibold ${activeTab === "inplay" && "bg-[#3B5160] text-white"
+            }`}
+        >
+          In-Play
+        </li>
+        <li
+          onClick={handleToday}
+          className={`w-[32.5%] text-md md:text-sm py-2 md:py-1 border cursor-pointer border-black border-r-0  font-semibold ${activeTab === "today" && "bg-[#3B5160] text-white"
+            }`}
+        >
+          Today
+        </li>
+        <li
+          onClick={handleTomorrow}
+          className={`w-[33%] text-md md:text-sm py-2 md:py-1 border cursor-pointer rounded-r-md border-black  font-semibold ${activeTab === "tomorrow" && "bg-[#3B5160] text-white"
+            }`}
+        >
+          Tomorrow
+        </li>
+      </ul>
 
       {renderData()}
 

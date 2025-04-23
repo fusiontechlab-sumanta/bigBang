@@ -43,6 +43,8 @@ function LeftSidebar() {
             setSportList(data);
         };
         const handleMatchData = (newData) => {
+            console.log("uuuuu>>>",newData);
+            
             setMatchData((prevData) => {
                 const updatedData = { ...prevData };
 
@@ -95,9 +97,9 @@ function LeftSidebar() {
     };
 
     const handleDropdownToggle = (categoryName, gamename, id) => {
-        console.log({ gameName: categoryName });
+        console.log({ gameName: categoryName } ,gamename, id);
 
-        socket.emit("getAllMatchesBySeriesIdAndGameName", { gameName: categoryName })
+        socket.emit("getAllMatchesBySeriesIdAndGameName", { gameName: categoryName ,gameType: gamename})
         setDropDown((prev) => ({
             ...prev,
             [categoryName]: !prev[categoryName], // Toggle the dropdown value

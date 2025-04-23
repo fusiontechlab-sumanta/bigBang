@@ -24,8 +24,8 @@ function Tennis({ banner }) {
         socket.emit('getMatchDataByType', { type: 'tennis', page: pageNum, limit: 20 });
 
         socket.on('getMatchByType', (data) => {
-            if (data?.matches?.length) {
-                setTennisData((prev) => [...prev, ...data.matches]);
+            if (data?.matches?.Tennis?.length) {
+                setTennisData((prev) => [...prev, ...data?.matches?.Tennis]);
             } else {
                 setHasMore(false);
             }
@@ -49,7 +49,7 @@ function Tennis({ banner }) {
         [loading, hasMore]
     );
 
-    // console.log(tennisData, "iiii");
+    console.log(tennisData, "iiii");
     return (
         <div>
             {!banner ? (
@@ -88,48 +88,28 @@ function Tennis({ banner }) {
                                         >
                                             <td className="px-2 py-2 text-nowrap text-center">
                                                 <Link
-                                                    to={`/fullmarket/${item?.gameName}/${item.event.id}`}
+                                                    to={`/fullmarket/Tennis/${item?.matchDetails?.eventId}`}
                                                     className="flex gap-x-2 flex-wrap text-[#3a8dc5] font-semibold cursor-pointer text-[4vw] lg:text-[12px]"
                                                 >
-                                                    {item?.event?.name}
+                                                    {item?.matchDetails?.eventName}
                                                     <span className="text-gray-400 font-normal text-sm">
-                                                        {formatDateTime(item?.event?.openDate)}
+                                                        {formatDateTime(item?.matchDetails?.eventDate)}
                                                     </span>
                                                 </Link>
                                             </td>
                                             <td className="text-white italic font-semibold text-center"></td>
-                                            {Array.from({ length: 3 }).map((_, idx) => {
-                                                const oddItem = item?.oddFancy?.oddFancy?.[0]?.runners; // Get runners array
-                                                // console.log(oddItem, "ttttttt--");
-
+                                            {(item?.oddDatas?.slice(0, 3).concat(Array(3).fill({})).slice(0, 3)).map((oddItem, idx) => {
                                                 return (
-                                                    <td key={idx} className="text-black text-[12px] lg:text-[11px] hidden sm:table-cell px-2 py-2 font-[700] text-center">
-                                                        {idx === 0 ? (
-                                                            <>
-                                                                <span className="px-2 py-1 bg-[#72BBEF]">
-                                                                    {oddItem?.[0]?.ex?.availableToBack?.[0]?.price ?? "0.0"}
-                                                                </span>
-                                                                <span className="px-2 py-1 bg-[#FAA9BA]">
-                                                                    {oddItem?.[0]?.ex?.availableToLay?.[0]?.price ?? "0.0"}
-                                                                </span>
-                                                            </>
-                                                        ) : idx === 1 ? (
-                                                            <>
-                                                                <span className="px-2 py-1 bg-[#72BBEF]">
-                                                                    {oddItem?.[1]?.ex?.availableToBack?.[0]?.price ?? "0.0"}
-                                                                </span>
-                                                                <span className="px-2 py-1 bg-[#FAA9BA]">
-                                                                    {oddItem?.[1]?.ex?.availableToLay?.[0]?.price ?? "0.0"}
-                                                                </span>
-                                                            </>
-                                                        ) : idx === 2 ? (<>
-                                                            <span className="px-2 py-1 bg-[#72BBEF]">
-                                                                {oddItem?.[2]?.ex?.availableToBack?.[0]?.price ?? "0.0"}
-                                                            </span>
-                                                            <span className="px-2 py-1 bg-[#FAA9BA]">
-                                                                {oddItem?.[2]?.ex?.availableToLay?.[0]?.price ?? "0.0"}
-                                                            </span>
-                                                        </>) : null}
+                                                    <td
+                                                        key={idx}
+                                                        className="text-black text-[12px] lg:text-[11px] hidden sm:table-cell px-2 py-2 font-[700] text-center"
+                                                    >
+                                                        <span className="px-2 py-1 bg-[#72BBEF]">
+                                                            {oddItem?.b1 ?? "0.0"}
+                                                        </span>
+                                                        <span className="px-2 py-1 bg-[#FAA9BA]">
+                                                            {oddItem?.l1 ?? "0.0"}
+                                                        </span>
                                                     </td>
                                                 );
                                             })}
@@ -148,7 +128,7 @@ function Tennis({ banner }) {
                     <Footer />
                 </div>
             ) : (
-                <div className="border border-b-0" style={{"overflow-y":"scroll","height":"40vh"}}>
+                <div className="border border-b-0" style={{ "overflow-y": "scroll", "height": "40vh" }}>
                     {loading ? (
                         <SmallLoading />
                     ) : tennisData.length === 0 ? (
@@ -174,51 +154,31 @@ function Tennis({ banner }) {
                                     >
                                         <td className="px-2 py-2 text-nowrap text-center">
                                             <Link
-                                                to={`/fullmarket/${item?.gameName}/${item.event.id}`}
+                                                to={`/fullmarket/Tennis/${item?.matchDetails?.eventId}`}
                                                 className="flex gap-x-2 flex-wrap text-[#3a8dc5] font-semibold cursor-pointer text-[4vw] lg:text-[12px]"
                                             >
-                                                {item?.event?.name}
+                                                {item?.matchDetails?.eventName}
                                                 <span className="text-gray-400 font-normal text-sm">
-                                                    {formatDateTime(item?.event?.openDate)}
+                                                    {formatDateTime(item?.matchDetails?.eventDate)}
                                                 </span>
                                             </Link>
                                         </td>
                                         <td className="text-white italic font-semibold text-center"></td>
-                                        {Array.from({ length: 3 }).map((_, idx) => {
-                                            const oddItem = item?.oddFancy?.oddFancy?.[0]?.runners; // Get runners array
-                                            // console.log(oddItem, "ttttttt--");
-
-                                            return (
-                                                <td key={idx} className="text-black text-[12px] lg:text-[11px] hidden sm:table-cell px-2 py-2 font-[700] text-center">
-                                                    {idx === 0 ? (
-                                                        <>
-                                                            <span className="px-2 py-1 bg-[#72BBEF]">
-                                                                {oddItem?.[0]?.ex?.availableToBack?.[0]?.price ?? "0.0"}
-                                                            </span>
-                                                            <span className="px-2 py-1 bg-[#FAA9BA]">
-                                                                {oddItem?.[0]?.ex?.availableToLay?.[0]?.price ?? "0.0"}
-                                                            </span>
-                                                        </>
-                                                    ) : idx === 1 ? (
-                                                        <>
-                                                            <span className="px-2 py-1 bg-[#72BBEF]">
-                                                                {oddItem?.[1]?.ex?.availableToBack?.[0]?.price ?? "0.0"}
-                                                            </span>
-                                                            <span className="px-2 py-1 bg-[#FAA9BA]">
-                                                                {oddItem?.[1]?.ex?.availableToLay?.[0]?.price ?? "0.0"}
-                                                            </span>
-                                                        </>
-                                                    ) : idx === 2 ? (<>
-                                                        <span className="px-2 py-1 bg-[#72BBEF]">
-                                                            {oddItem?.[2]?.ex?.availableToBack?.[0]?.price ?? "0.0"}
-                                                        </span>
-                                                        <span className="px-2 py-1 bg-[#FAA9BA]">
-                                                            {oddItem?.[2]?.ex?.availableToLay?.[0]?.price ?? "0.0"}
-                                                        </span>
-                                                    </>) : null}
-                                                </td>
-                                            );
-                                        })}
+                                        {(item?.oddDatas?.slice(0, 3).concat(Array(3).fill({})).slice(0, 3)).map((oddItem, idx) => {
+                          return (
+                            <td
+                              key={idx}
+                              className="text-black text-[12px] lg:text-[11px] hidden sm:table-cell px-2 py-2 font-[700] text-center"
+                            >
+                              <span className="px-2 py-1 bg-[#72BBEF]">
+                                {oddItem?.b1 ?? "0.0"}
+                              </span>
+                              <span className="px-2 py-1 bg-[#FAA9BA]">
+                                {oddItem?.l1 ?? "0.0"}
+                              </span>
+                            </td>
+                          );
+                        })}
                                         <td className="px-2 py-2 text-center">
                                             <MdOutlinePushPin className="text-xl border rounded-full border-gray-500 cursor-pointer" />
                                         </td>

@@ -21,8 +21,10 @@ function Soccer({ banner }) {
       socket.emit('getMatchDataByType', { type: 'football', page: pageNum, limit: 20 });
 
       const handleData = (data) => {
-        if (data?.matches?.length) {
-          setSoccerData((prev) => [...prev, ...data.matches]);
+        console.log(data, "uuuuuuuu>>>>>>>>>>");
+
+        if (data?.matches?.Football?.length) {
+          setSoccerData((prev) => [...prev, ...data?.matches?.Football]);
         } else {
           setHasMore(false);
         }
@@ -51,6 +53,9 @@ function Soccer({ banner }) {
     },
     [loading, hasMore]
   );
+
+  console.log(soccerData, "PPPPPPPPPPPPPPP");
+
 
   return (
     <div>
@@ -90,50 +95,30 @@ function Soccer({ banner }) {
                     >
                       <td className="px-2 py-2 text-nowrap text-center">
                         <Link
-                          to={`/fullmarket/Soccer/${item.event.id}`}
+                          to={`/fullmarket/Soccer/${item?.matchDetails?.eventId}`}
                           className="flex gap-x-2 flex-wrap text-[#3a8dc5] font-semibold cursor-pointer text-[4vw] lg:text-[12px]"
                         >
-                          {item?.event?.name}
+                          {item?.matchDetails?.eventName}
                           <span className="text-gray-400 font-normal text-sm">
-                            {formatDateTime(item?.event?.openDate)}
+                            {formatDateTime(item?.matchDetails?.eventDate)}
                           </span>
                         </Link>
                       </td>
 
                       <td className="text-white italic font-semibold text-center"></td>
 
-                      {Array.from({ length: 3 }).map((_, idx) => {
-                        const oddItem = item?.oddFancy?.oddFancy?.[0]?.runners; // Get runners array
-                        // console.log(oddItem, "ttttttt--");
-
+                      {(item?.oddDatas?.slice(0, 3).concat(Array(3).fill({})).slice(0, 3)).map((oddItem, idx) => {
                         return (
-                          <td key={idx} className="text-black text-[12px] lg:text-[11px] hidden sm:table-cell px-2 py-2 font-[700] text-center">
-                            {idx === 0 ? (
-                              <>
-                                <span className="px-2 py-1 bg-[#72BBEF]">
-                                  {oddItem?.[0]?.ex?.availableToBack?.[0]?.price ?? "0.0"}
-                                </span>
-                                <span className="px-2 py-1 bg-[#FAA9BA]">
-                                  {oddItem?.[0]?.ex?.availableToLay?.[0]?.price ?? "0.0"}
-                                </span>
-                              </>
-                            ) : idx === 1 ? (
-                              <>
-                                <span className="px-2 py-1 bg-[#72BBEF]">
-                                  {oddItem?.[1]?.ex?.availableToBack?.[0]?.price ?? "0.0"}
-                                </span>
-                                <span className="px-2 py-1 bg-[#FAA9BA]">
-                                  {oddItem?.[1]?.ex?.availableToLay?.[0]?.price ?? "0.0"}
-                                </span>
-                              </>
-                            ) : idx === 2 ? (<>
-                              <span className="px-2 py-1 bg-[#72BBEF]">
-                                {oddItem?.[2]?.ex?.availableToBack?.[0]?.price ?? "0.0"}
-                              </span>
-                              <span className="px-2 py-1 bg-[#FAA9BA]">
-                                {oddItem?.[2]?.ex?.availableToLay?.[0]?.price ?? "0.0"}
-                              </span>
-                            </>) : null}
+                          <td
+                            key={idx}
+                            className="text-black text-[12px] lg:text-[11px] hidden sm:table-cell px-2 py-2 font-[700] text-center"
+                          >
+                            <span className="px-2 py-1 bg-[#72BBEF]">
+                              {oddItem?.b1 ?? "0.0"}
+                            </span>
+                            <span className="px-2 py-1 bg-[#FAA9BA]">
+                              {oddItem?.l1 ?? "0.0"}
+                            </span>
                           </td>
                         );
                       })}
@@ -151,7 +136,7 @@ function Soccer({ banner }) {
           <Footer />
         </div>
       ) : (
-        <div className="border border-b-0"style={{"overflow-y":"scroll","height":"40vh"}}>
+        <div className="border border-b-0" style={{ "overflow-y": "scroll", "height": "40vh" }}>
           {loading && page === 1 ? (
             <SmallLoading />
           ) : soccerData.length === 0 ? (
@@ -177,50 +162,30 @@ function Soccer({ banner }) {
                   >
                     <td className="px-2 py-2 text-nowrap text-center">
                       <Link
-                        to={`/fullmarket/Soccer/${item.event.id}`}
+                        to={`/fullmarket/Soccer/${item?.matchDetails?.eventId}`}
                         className="flex gap-x-2 flex-wrap text-[#3a8dc5] font-semibold cursor-pointer text-[4vw] lg:text-[12px]"
                       >
-                        {item?.event?.name}
+                        {item?.matchDetails?.eventName}
                         <span className="text-gray-400 font-normal text-sm">
-                          {formatDateTime(item?.event?.openDate)}
+                          {formatDateTime(item?.matchDetails?.eventDate)}
                         </span>
                       </Link>
                     </td>
 
                     <td className="text-white italic font-semibold text-center"></td>
 
-                    {Array.from({ length: 3 }).map((_, idx) => {
-                      const oddItem = item?.oddFancy?.oddFancy?.[0]?.runners; // Get runners array
-                      // console.log(oddItem, "ttttttt--");
-
+                    {(item?.oddDatas?.slice(0, 3).concat(Array(3).fill({})).slice(0, 3)).map((oddItem, idx) => {
                       return (
-                        <td key={idx} className="text-black text-[12px] lg:text-[11px] hidden sm:table-cell px-2 py-2 font-[700] text-center">
-                          {idx === 0 ? (
-                            <>
-                              <span className="px-2 py-1 bg-[#72BBEF]">
-                                {oddItem?.[0]?.ex?.availableToBack?.[0]?.price ?? "0.0"}
-                              </span>
-                              <span className="px-2 py-1 bg-[#FAA9BA]">
-                                {oddItem?.[0]?.ex?.availableToLay?.[0]?.price ?? "0.0"}
-                              </span>
-                            </>
-                          ) : idx === 1 ? (
-                            <>
-                              <span className="px-2 py-1 bg-[#72BBEF]">
-                                {oddItem?.[1]?.ex?.availableToBack?.[0]?.price ?? "0.0"}
-                              </span>
-                              <span className="px-2 py-1 bg-[#FAA9BA]">
-                                {oddItem?.[1]?.ex?.availableToLay?.[0]?.price ?? "0.0"}
-                              </span>
-                            </>
-                          ) : idx === 2 ? (<>
-                            <span className="px-2 py-1 bg-[#72BBEF]">
-                              {oddItem?.[2]?.ex?.availableToBack?.[0]?.price ?? "0.0"}
-                            </span>
-                            <span className="px-2 py-1 bg-[#FAA9BA]">
-                              {oddItem?.[2]?.ex?.availableToLay?.[0]?.price ?? "0.0"}
-                            </span>
-                          </>) : null}
+                        <td
+                          key={idx}
+                          className="text-black text-[12px] lg:text-[11px] hidden sm:table-cell px-2 py-2 font-[700] text-center"
+                        >
+                          <span className="px-2 py-1 bg-[#72BBEF]">
+                            {oddItem?.b1 ?? "0.0"}
+                          </span>
+                          <span className="px-2 py-1 bg-[#FAA9BA]">
+                            {oddItem?.l1 ?? "0.0"}
+                          </span>
                         </td>
                       );
                     })}
