@@ -869,45 +869,45 @@ function Booking() {
 
             console.log(type, marketname, teamName, "iiiiiiiiii---");
             // API endpoint
-            // const url = `${import.meta.env.VITE_BASE_URL}${import.meta.env.VITE_PLACE_BET}`;
+            const url = `${import.meta.env.VITE_BASE_URL}${import.meta.env.VITE_PLACE_BET}`;
 
-            // // Make the API call
-            // const placeBet = async () => {
-            //     try {
-            //         const response = await axios.post(url, data, {
-            //             headers: {
-            //                 Authorization: `Bearer ${storedToken}`, // Add Authorization header if needed
-            //                 'Content-Type': 'application/json' // Ensure proper content type
-            //             }
-            //         });
+            // Make the API call
+            const placeBet = async () => {
+                try {
+                    const response = await axios.post(url, data, {
+                        headers: {
+                            Authorization: `Bearer ${storedToken}`, // Add Authorization header if needed
+                            'Content-Type': 'application/json' // Ensure proper content type
+                        }
+                    });
 
-            //         // Handle success
-            //         if (response.status === 200 || response.status === 201) {
-            //             toastSuccess("Bet placed successfully!");
-            //             HandleCancel(type);
-            //             handleRefresh();
-            //             dispatch(setBet(true)); // Dispatch action
-            //         } else {
-            //             toastError(response.data?.message || "Failed to place bet.");
-            //         }
-            //     } catch (error) {
-            //         toastError(error.response?.data?.message || "An error occurred.");
-            //     } finally {
-            //         setTimeout(() => {
-            //             setIsRefreshing(false); // Hide loading animation after refetching
-            //         }, 1000);
-            //     }
-            // };
+                    // Handle success
+                    if (response.status === 200 || response.status === 201) {
+                        toastSuccess("Bet placed successfully!");
+                        HandleCancel(type);
+                        handleRefresh();
+                        dispatch(setBet(true)); // Dispatch action
+                    } else {
+                        toastError(response.data?.message || "Failed to place bet.");
+                    }
+                } catch (error) {
+                    toastError(error.response?.data?.message || "An error occurred.");
+                } finally {
+                    setTimeout(() => {
+                        setIsRefreshing(false); // Hide loading animation after refetching
+                    }, 1000);
+                }
+            };
 
-            // // Immediate call for "Fancy"
-            // if (marketname === "Fancy") {
-            //     await placeBet();
-            // } else {
-            //     // Delayed call for other market types
-            //     setTimeout(async () => {
-            //         await placeBet();
-            //     }, 5000); // Call this API after 5 seconds
-            // }
+            // Immediate call for "Fancy"
+            if (marketname === "Fancy") {
+                await placeBet();
+            } else {
+                // Delayed call for other market types
+                setTimeout(async () => {
+                    await placeBet();
+                }, 5000); // Call this API after 5 seconds
+            }
 
         } catch (error) {
             // Handle errors
