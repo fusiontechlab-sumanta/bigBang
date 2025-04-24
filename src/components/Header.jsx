@@ -22,11 +22,11 @@ import { setBet } from "../redux/action/action";
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
 function Header() {
     const [showPasswordModal, setShowPasswordModal] = useState(false);
-  const [oldPassword, setOldPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [showOldPassword, setShowOldPassword] = useState(false);
-  const [showNewPassword, setShowNewPassword] = useState(false);
+    const [oldPassword, setOldPassword] = useState("");
+    const [newPassword, setNewPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [showOldPassword, setShowOldPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
@@ -42,7 +42,18 @@ function Header() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
     const [open, setOpen] = useState(false)
+    const [registerfron, setRegisterfron] = useState(false);
 
+    const [registerfronData, setRegisterfronData] = useState({
+        name: '',
+        username: '',
+        mobile: '',
+        password: '',
+        confirmPassword: ''
+      });
+
+      const [registererrorMessage, setRegisterErrorMessage] = useState('');
+      const [registerloading, setRegisterLoading] = useState(false);
 
     const pathSegments = location.pathname.split("/");
 
@@ -95,7 +106,7 @@ function Header() {
                     // setShowPasswordModal(true); 
                     window.location.reload();
                 }
-                
+
             }
             else {
                 toastError(response?.data?.message)
@@ -199,6 +210,68 @@ function Header() {
         dispatch(setBet(false)); // Dispatch action
     }
 
+    const handregister = () => {
+        setRegisterfron(true);
+    };
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setRegisterfronData((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
+
+    const handleRegister = async (e) => {
+        e.preventDefault();
+        const { name, username, mobile, password, confirmPassword } = registerfronData;
+      
+        if (password !== confirmPassword) {
+          setRegisterErrorMessage('Passwords do not match.');
+          return;
+        }
+      
+        setRegisterLoading(true);
+        setRegisterErrorMessage('');
+      
+        try {
+          const formdata = new FormData();
+          formdata.append('username', username);
+          formdata.append('name', name);
+          formdata.append('mobile', mobile);
+          formdata.append('password', password);
+      
+          const requestOptions = {
+            method: 'POST',
+            body: formdata,
+          };
+      
+          const response = await fetch('https://admin.bigbbang.com/api/register', requestOptions);
+          const result = await response.json();
+      
+          if (response.ok) {
+            toastSuccess('Registration successful!');
+            setRegisterfronData({
+              name: '',
+              username: '',
+              mobile: '',
+              password: '',
+              confirmPassword: ''
+            });
+            setRegisterfron(false);
+          } else {
+            setRegisterErrorMessage(result.message || 'Registration failed.');
+          }
+        } catch (error) {
+          console.error(error);
+          setRegisterErrorMessage('Something went wrong. Please try again.');
+        } finally {
+          setRegisterLoading(false);
+        }
+      };
+      
+      
+
     return (
         <>
             <div className='select-none sticky top-0 z-50'>
@@ -219,7 +292,7 @@ function Header() {
                             </button> : <Link to="/" className="flex items-center lg:ms-4">
                                 <img src={logo} alt="Logo" className=" h-20 w-[100px]" />
                             </Link>}
-                            
+
                             {/* <button onClick={showLiveBets} style={{ "width": "100px" }} className="flex md:hidden items-center bg-[rgb(16 74 99)] hover:bg-[#102b3f] text-white font-bold py-1 px-3 rounded-md shadow-md border-t border-white/50">
                                 <img src={logo1} alt="Mobile Logo" className="w-5 h-5 mr-2" />
                                 Bets
@@ -276,12 +349,26 @@ function Header() {
                                     Login
                                     <CiLogin className="mt-1.5 ms-1 font-extrabold" />
                                 </button>
+                                <button
+                                    onClick={handregister}
+                                    className="bg-red-600  text-white px-6 max-sm:px-3 max-sm:rounded-sm max-sm:py-1 rounded-lg font-semibold hidden lg:flex items-center"
+                                >
+                                    register
+                                    {/* <CiLogin className="mt-1.5 ms-1 font-extrabold" /> */}
+                                </button>
                                 {/* small device button */}
                                 <button
                                     onClick={handleLoginmobile}
-                                   className="w-[80px] h-[36px] text-sm bg-red-600 lg:hidden text-white px-6 max-sm:px-3 max-sm:rounded-sm max-sm:py-1 rounded-lg font-semibold flex items-center"
+                                    className="w-[80px] h-[36px] text-sm bg-red-600 lg:hidden text-white px-6 max-sm:px-3 max-sm:rounded-sm max-sm:py-1 rounded-lg font-semibold flex items-center"
                                 >
                                     Login
+                                    <CiLogin className="mt-1.5 ms-1 font-extrabold" />
+                                </button>
+                                <button
+                                    onClick={handregister}
+                                    className="w-[80px] h-[36px] text-sm bg-red-600 lg:hidden text-white px-6 max-sm:px-3 max-sm:rounded-sm max-sm:py-1 rounded-lg font-semibold flex items-center"
+                                >
+                                    register
                                     <CiLogin className="mt-1.5 ms-1 font-extrabold" />
                                 </button>
                             </div>
@@ -378,6 +465,7 @@ function Header() {
                             </div>
 
                         }
+
                     </div>
                 </div>
 
@@ -447,107 +535,225 @@ function Header() {
 
             </div>
 
-       {showPasswordModal && (
-               <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center p-2 items-start z-50">
-                 <div className="bg-white rounded-b-sm w-96  shadow-lg">
-                   <h2 className="text-xl font-semibold text-center mb-4 bg-gray-800 text-white py-2 ">
-                     Change Password
-                   </h2>
-       
-                   <form onSubmit={handlePasswordChange} className="space-y-4">
-                     {errorMessage && (
-                       <div className="text-red-500 text-sm mb-4">{errorMessage}</div>
-                     )}
-                     <div className="p-2">
-       
-                       {/* Old Password */}
-                       <div>
-                         <label className="block text-sm font-medium text-gray-700">
-                           Old Password <span className="text-red-500">*</span>
-                         </label>
-                         <div className="relative">
-                           <input
-                             type={showOldPassword ? "text" : "password"}
-                             className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                             placeholder="Old Password.."
-                             value={oldPassword}
-                             onChange={(e) => setOldPassword(e.target.value)}
-                             required
-                           />
-                           <button
-                             type="button"
-                             className="absolute right-3 top-3"
-                             onClick={() => setShowOldPassword(!showOldPassword)}
-                           >
-                             {showOldPassword ? <FaEyeSlash /> : <FaEye />}
-                           </button>
-                         </div>
-                       </div>
-       
-                       {/* New Password */}
-                       <div>
-                         <label className="block text-sm font-medium text-gray-700">
-                           New Password <span className="text-red-500">*</span>
-                         </label>
-                         <div className="relative">
-                           <input
-                             type={showNewPassword ? "text" : "password"}
-                             className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                             placeholder="New Password.."
-                             value={newPassword}
-                             onChange={(e) => setNewPassword(e.target.value)}
-                             required
-                           />
-                           <button
-                             type="button"
-                             className="absolute right-3 top-3"
-                             onClick={() => setShowNewPassword(!showNewPassword)}
-                           >
-                             {showNewPassword ? <FaEyeSlash /> : <FaEye />}
-                           </button>
-                         </div>
-                       </div>
-       
-                       {/* Confirm Password */}
-                       <div>
-                         <label className="block text-sm font-medium text-gray-700">
-                           Confirm Password <span className="text-red-500">*</span>
-                         </label>
-                         <div className="relative">
-                           <input
-                             type={showConfirmPassword ? "text" : "password"}
-                             className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                             placeholder="Confirm Password.."
-                             value={confirmPassword}
-                             onChange={(e) => setConfirmPassword(e.target.value)}
-                             required
-                           />
-                           <button
-                             type="button"
-                             className="absolute right-3 top-3"
-                             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                           >
-                             {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-                           </button>
-                         </div>
-                       </div>
-       
-                       {/* Confirm Button */}
-                       <div className="flex justify-end mt-2">
-                         <button
-                           type="submit"
-                           className="bg-[#262524] text-white px-6 py-2 rounded-md font-semibold"
-                           disabled={loading}
-                         >
-                           {loading ? "Updating..." : "Confirm"}
-                         </button>
-                       </div>
-                     </div>
-       
-                   </form>
-                 </div>
-               </div>
-             )}
+            {showPasswordModal && (
+                <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center p-2 items-start z-50">
+                    <div className="bg-white rounded-b-sm w-96  shadow-lg">
+                        <h2 className="text-xl font-semibold text-center mb-4 bg-gray-800 text-white py-2 ">
+                            Change Password
+                        </h2>
+
+                        <form onSubmit={handlePasswordChange} className="space-y-4">
+                            {errorMessage && (
+                                <div className="text-red-500 text-sm mb-4">{errorMessage}</div>
+                            )}
+                            <div className="p-2">
+
+                                {/* Old Password */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">
+                                        Old Password <span className="text-red-500">*</span>
+                                    </label>
+                                    <div className="relative">
+                                        <input
+                                            type={showOldPassword ? "text" : "password"}
+                                            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                                            placeholder="Old Password.."
+                                            value={oldPassword}
+                                            onChange={(e) => setOldPassword(e.target.value)}
+                                            required
+                                        />
+                                        <button
+                                            type="button"
+                                            className="absolute right-3 top-3"
+                                            onClick={() => setShowOldPassword(!showOldPassword)}
+                                        >
+                                            {showOldPassword ? <FaEyeSlash /> : <FaEye />}
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* New Password */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">
+                                        New Password <span className="text-red-500">*</span>
+                                    </label>
+                                    <div className="relative">
+                                        <input
+                                            type={showNewPassword ? "text" : "password"}
+                                            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                                            placeholder="New Password.."
+                                            value={newPassword}
+                                            onChange={(e) => setNewPassword(e.target.value)}
+                                            required
+                                        />
+                                        <button
+                                            type="button"
+                                            className="absolute right-3 top-3"
+                                            onClick={() => setShowNewPassword(!showNewPassword)}
+                                        >
+                                            {showNewPassword ? <FaEyeSlash /> : <FaEye />}
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Confirm Password */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">
+                                        Confirm Password <span className="text-red-500">*</span>
+                                    </label>
+                                    <div className="relative">
+                                        <input
+                                            type={showConfirmPassword ? "text" : "password"}
+                                            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                                            placeholder="Confirm Password.."
+                                            value={confirmPassword}
+                                            onChange={(e) => setConfirmPassword(e.target.value)}
+                                            required
+                                        />
+                                        <button
+                                            type="button"
+                                            className="absolute right-3 top-3"
+                                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                        >
+                                            {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Confirm Button */}
+                                <div className="flex justify-end mt-2">
+                                    <button
+                                        type="submit"
+                                        className="bg-[#262524] text-white px-6 py-2 rounded-md font-semibold"
+                                        disabled={loading}
+                                    >
+                                        {loading ? "Updating..." : "Confirm"}
+                                    </button>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            )}
+
+{registerfron && (
+  <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center p-2 items-start z-50">
+    <div className="bg-white rounded-md w-96 shadow-lg">
+      <h2 className="text-xl font-semibold text-center mb-4 bg-gray-800 text-white py-2">
+        Register
+      </h2>
+
+      <form onSubmit={handleRegister} className="space-y-4">
+        {registererrorMessage && (
+          <div className="text-red-500 text-sm mb-4 px-4">
+            {registererrorMessage}
+          </div>
+        )}
+
+        <div className="p-4 space-y-3">
+          {/* Username */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Username <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              name="username"
+              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md"
+              placeholder="Enter Username"
+              value={registerfronData.username}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          {/* Full Name */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Full Name <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              name="name"
+              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md"
+              placeholder="Enter Full Name"
+              value={registerfronData.name}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          {/* Mobile */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Mobile <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="tel"
+              name="mobile"
+              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md"
+              placeholder="Enter Mobile"
+              value={registerfronData.mobile}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          {/* Password */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Password <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="password"
+              name="password"
+              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md"
+              placeholder="Enter Password"
+              value={registerfronData.password}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          {/* Confirm Password */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Confirm Password <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="password"
+              name="confirmPassword"
+              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md"
+              placeholder="Confirm Password"
+              value={registerfronData.confirmPassword}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          {/* Buttons */}
+          <div className="flex justify-end gap-2 mt-2">
+            <button
+              type="button"
+              onClick={() => setRegisterfron(false)}
+              className="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded-md font-semibold"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="bg-[#262524] hover:bg-[#1c1b1a] text-white px-6 py-2 rounded-md font-semibold"
+              disabled={registerloading}
+            >
+              {registerloading ? 'Submitting...' : 'Submit'}
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+)}
 
             {open && <LiveBets hideLiveBets={hideLiveBets} />}
             {/* Show the LoginWarningModal only if it's small screen */}

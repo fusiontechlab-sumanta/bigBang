@@ -20,6 +20,7 @@ import { toastError } from '../../utils/notifyCustom';
 function MyProfile() {
     const [showModal, setShowModal] = useState(false);
     const [showEditModel, setShowEditModel] = useState(false);
+    const [showEditMoneyModel, setShowEditMoneyModel] = useState(false);
     const [oldPasword, setoldPasword] = useState()
     const [newPasword, setnewPasword] = useState()
     const [confirmPasword, setconfirmPasword] = useState()
@@ -32,7 +33,7 @@ function MyProfile() {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
+    const [amount, setAmount] = useState('');
     const url = `${import.meta.env.VITE_BASE_URL}${import.meta.env.VITE_PROFILE_DETAIL}`;
     const { data: profile, isLoading, isError, refetch } = useQuery("getuserProfileDetails", () => getApiWithToken(url));
     if (isError) {
@@ -112,6 +113,15 @@ function MyProfile() {
                     <p className="flex items-center py-[5px] pr-[12px] pl-[17px]">
                         ********
                         <span onClick={() => setShowEditModel(true)} className="ml-3 cursor-pointer flex items-center gap-1 text-sm md:text-base">
+                            Edit <PiNotePencilBold />
+                        </span>
+                    </p>
+                </div>
+                <div className="border-b border-[#ccc] md:grid md:grid-cols-2">
+                    <p className="font-semibold py-[5px] pr-[12px] pl-[17px] border-b border-[#ccc] md:border-b-0">Add Money</p>
+                    <p className="flex items-center py-[5px] pr-[12px] pl-[17px]">
+
+                        <span onClick={() => setShowEditMoneyModel(true)} className="ml-3 cursor-pointer flex items-center gap-1 text-sm md:text-base">
                             Edit <PiNotePencilBold />
                         </span>
                     </p>
@@ -405,6 +415,87 @@ function MyProfile() {
                         </TEModalContent>
                     </TEModalDialog>
                 </TEModal>
+
+                <TEModal show={showEditMoneyModel} setShow={setShowEditMoneyModel}>
+                    <TEModalDialog>
+                        <TEModalContent>
+                            <TEModalHeader className="bg-[#213944] h-3">
+                                <h5 className="text-lg text-white font-bold leading-normal">Add Money</h5>
+                                <button
+                                    type="button"
+                                    className="box-content hover:opacity-75 text-white"
+                                    onClick={() => setShowEditMoneyModel(false)}
+                                    aria-label="Close"
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        strokeWidth="5"
+                                        stroke="currentColor"
+                                        className="h-4 w-4"
+                                    >
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </TEModalHeader>
+
+                            <TEModalBody>
+                                <form>
+                                    <div className="grid grid-cols-2 max-md:grid-cols-1 gap-3">
+                                        <div>
+                                            <p>
+                                                Amount <sup className="text-red-600">*</sup>
+                                            </p>
+                                            <div className="border border-gray-500 rounded-md py-1.5 px-3">
+                                                <input
+                                                    name="amount"
+                                                    type="number"
+                                                    value={amount}
+                                                    onChange={(e) => setAmount(e.target.value)}
+                                                    className="focus:outline-none w-full"
+                                                    required
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </TEModalBody>
+
+                            <TEModalFooter className="flex flex-col items-center gap-2">
+                                {/* {errorMessage && (
+                                    <p className="text-red-500 text-sm text-center">{errorMessage}</p>
+                                )} */}
+
+                                <div className="flex gap-3">
+                                    <TERipple rippleColor="light">
+                                        <button
+                                            type="button"
+                                            className={`inline-block rounded px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal ${amount && !loading ? "bg-[#213944]" : "bg-gray-500"
+                                                } text-white`}
+                                            // onClick={handleSubmit}
+                                            disabled={!amount || loading}
+                                        >
+                                            Confirm
+                                        </button>
+                                    </TERipple>
+
+                                    <TERipple rippleColor="light">
+                                        <button
+                                            type="button"
+                                            className="inline-block rounded bg-gray-400 text-gray-800 px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal"
+                                            onClick={() => setShowEditMoneyModel(false)}
+                                        >
+                                            No
+                                        </button>
+                                    </TERipple>
+                                </div>
+                            </TEModalFooter>
+                        </TEModalContent>
+                    </TEModalDialog>
+                </TEModal>
+
+
             </div>
         </div>
     )
