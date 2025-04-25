@@ -81,6 +81,36 @@ function MyProfile() {
 
     }
 
+
+    const handleAddMoney = async () => {
+        try {
+            const url = `${import.meta.env.VITE_BASE_URL}/add-balance`;
+    
+            const form = new FormData();
+            form.append("amount", amount);
+    
+            const response = await postApiWithTokenRowData(url, form);
+    
+            if (response?.status === 200) {
+                const paymentUrl = response?.data?.data?.payment_url;
+
+                if (paymentUrl) {
+                    window.location.href = paymentUrl; // open in same tab
+                } else {
+                    toastError("Payment URL not found.");
+                }
+            } else {
+                const message = response?.data?.message || "Failed to add money.";
+                setErrorMessage(message);
+                toastError(message);
+            }
+        } catch (error) {
+            console.error("Error adding money:", error);
+            toastError("Something went wrong. Please try again.");
+        }
+    };
+    
+
     return (
         <div className='mt-6 bg-white border rounded-lg pb-7 mb-36 lg:mb-2'>
             <h1 className='px-2 bg-[#243f4e] text-white  lg:font-semibold py-1 rounded-t-sm'>Account Details</h1>
@@ -473,7 +503,7 @@ function MyProfile() {
                                             type="button"
                                             className={`inline-block rounded px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal ${amount && !loading ? "bg-[#213944]" : "bg-gray-500"
                                                 } text-white`}
-                                            // onClick={handleSubmit}
+                                            onClick={handleAddMoney}
                                             disabled={!amount || loading}
                                         >
                                             Confirm
