@@ -106,4 +106,15 @@ export function formatServerTime(serverTime) {
     return `${year}-${month}-${day} ${hours}:${minutes} ${ampm}`;
 }
 
-
+export function formatAmount(data) {
+    const num = Number(data); // ensures it's a number
+    const decimal = num % 1;
+  
+    if (decimal === 0) {
+      return `${Math.floor(num)}`; // remove .0
+    }
+  
+    return `${num.toFixed(1)}`; // show 1 decimal place if needed
+  }
+  
+  
