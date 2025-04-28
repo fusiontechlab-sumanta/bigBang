@@ -406,9 +406,9 @@ function Booking() {
         return team ? team[key] : null;
     };
 
-    const handlePlaceBet = async (type, marketname, teamName, length) => {
+    const handlePlaceBet = async (type, marketname, teamName, length , sid) => {
         try {
-            console.log("uuuuuuu", type, marketname, teamName, length, showBook[type]);
+            console.log("uuuuuuu",type, marketname, teamName, length , sid);
 
 
             setIsRefreshing(true); // Show loading animation
@@ -794,7 +794,7 @@ function Booking() {
 
             console.log(
                 betData1, betData2, betData3
-                , " bet");
+                , " bet",sid);
 
             // console.log((oddreq > 2.1), "----iiioo--", showBook[type]?.rate, oddreq);
 
@@ -863,6 +863,7 @@ function Booking() {
                 team_bet1: team_bet1,
                 team_bet2: team_bet2,
                 team_bet3: team_bet3,
+                sid: sid
                 // Conditionally add previous_bet3 if marketname is "fancy1" and betData3 is not null
                 // ...(marketname === "fancy1" && betData3 !== null && { previous_bet3: betData3?.toFixed(2) })
             };
@@ -1087,7 +1088,7 @@ function Booking() {
 
 
 
-    // console.log("lastBetValueFANCY", t8Data)
+    // console.log("lastBetValueFANCY", t3Data)
 
     // console.log(lastBetValueFANCY?.fancyBetListData, "+++++++++++++lastBetValue+++++++++");
 
@@ -3558,7 +3559,7 @@ function Booking() {
                                                                 {/* Place Bet Button */}
                                                                 <button
 
-                                                                    onClick={() => handlePlaceBet("t3", t3Data?.mname, item?.rname,)}
+                                                                    onClick={() => handlePlaceBet("t3", t3Data?.mname, item?.rname, item?.rname ,item?.sid)}
                                                                     // disabled={item?.gstatus}
                                                                     className={`flex max-lg:hidden justify-center items-center h-full border rounded-md border-gray-600
                                                                     ${showBook.t3.amount
@@ -3588,7 +3589,7 @@ function Booking() {
 
                                                                 </button>
                                                                 <button
-                                                                   onClick={() => handlePlaceBet("t3", t3Data?.mname, item?.rname,)}
+                                                                   onClick={() => handlePlaceBet("t3", t3Data?.mname, item?.rname, item?.rname ,item?.sid)}
                                                                     // disabled={item?.gstatus}
 
                                                                     className={`flex  justify-center items-center h-full bg-[#577094] border rounded-md border-gray-600
