@@ -904,7 +904,7 @@ function Booking() {
             };
 
             // Immediate call for "Fancy"
-            if (marketname === "Fancy") {
+            if (marketname === "FANCY_ODDS") {
                 await placeBet();
             } else {
                 // Delayed call for other market types
