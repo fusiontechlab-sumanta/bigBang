@@ -80,11 +80,11 @@ export function formatTime(date, time) {
 
 export function formatDateTime(dateString) {
     let date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); 
-    const day = String(date.getDate()).padStart(2, '0');
-    const hours = String(date.getHours()).padStart(2, '0'); 
-    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0'); 
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    const hours = String(date.getUTCHours()).padStart(2, '0'); 
+    const minutes = String(date.getUTCMinutes()).padStart(2, '0');
 
     return `${year}-${month}-${day} ${hours}:${minutes}`;
 }
@@ -106,4 +106,15 @@ export function formatServerTime(serverTime) {
     return `${year}-${month}-${day} ${hours}:${minutes} ${ampm}`;
 }
 
-
+export function formatAmount(data) {
+    const num = Number(data); // ensures it's a number
+    const decimal = num % 1;
+  
+    if (decimal === 0) {
+      return `${Math.floor(num)}`; // remove .0
+    }
+  
+    return `${num.toFixed(1)}`; // show 1 decimal place if needed
+  }
+  
+  

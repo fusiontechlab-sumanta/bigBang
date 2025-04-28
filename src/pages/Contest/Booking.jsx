@@ -8,7 +8,7 @@ import soccer from '../../assets/booking/soccer.png'
 import tennis from '../../assets/booking/tennis.png'
 import '../../css/inplay.css'
 import socket from '../../socket';
-import { formatDateTime, formatServerTime } from '../../utils/getuserdata';
+import { formatAmount, formatDateTime, formatServerTime } from '../../utils/getuserdata';
 import { toastError, toastSuccess, toastWarn } from '../../utils/notifyCustom';
 import { FaLongArrowAltRight } from "react-icons/fa";
 import LoginWarningModal from '../../components/Auth/LoginWarningModal';
@@ -2800,8 +2800,8 @@ function Booking() {
 
                                                     >
                                                         <div className='py-[3px]'>
-                                                            <p className="px-1 leading-4  font-[700] text-[12px]">{item?.b3 || '-'}</p>
-                                                            <p className="px-1 leading-4  font-light text-gray-800 text-[11px]">{item?.bs3 || ''}</p>
+                                                            <p className="px-1 leading-4  font-[700] text-[12px]">{formatAmount(item?.b3) || '-'}</p>
+                                                            <p className="px-1 leading-4  font-light text-gray-800 text-[11px]">{formatAmount(item?.bs3) || ''}</p>
                                                         </div>
                                                         {item?.status != "ACTIVE" ? <div className="absolute inset-0 flex items-center justify-center bg-red-500 bg-opacity-20">
                                                                     <p className="text-red-100 text-[10px] sm:text-xs md:text-sm font-bold">SUSPENDED</p>
@@ -2818,8 +2818,8 @@ function Booking() {
                                                         disabled={!item?.b2}
                                                     >
                                                         <div className='py-[3px]'>
-                                                            <p className="px-1 leading-4   font-[700] text-[12px]">{item?.b2 || '-'}</p>
-                                                            <p className="px-1 leading-4  font-light text-gray-800 text-[11px]">{item?.bs2 || ""}</p>
+                                                            <p className="px-1 leading-4   font-[700] text-[12px]">{formatAmount(item?.b2) || '-'}</p>
+                                                            <p className="px-1 leading-4  font-light text-gray-800 text-[11px]">{formatAmount(item?.bs2) || ""}</p>
                                                         </div>
 
                                                     </button>
@@ -2831,13 +2831,13 @@ function Booking() {
                                                 >
                                                     {item.status == "ACTIVE" ? (
                                                         <div className='py-[3px]'>
-                                                            <p className="px-1 leading-4 font-[700] text-[12px]">{item?.b1 || '-'}</p>
-                                                            <p className="px-1 leading-4 font-light text-gray-800 text-[11px]">{item?.bs1 || ''}</p>
+                                                            <p className="px-1 leading-4 font-[700] text-[12px]">{formatAmount(item?.b1) || '-'}</p>
+                                                            <p className="px-1 leading-4 font-light text-gray-800 text-[11px]">{formatAmount(item?.bs1) || ''}</p>
                                                         </div>
                                                     ) : (
                                                         <div className="py-[3px] relative">
-                                                            <p className="px-1 leading-4 font-[700] text-[12px]">{item?.b1 || '-'}</p>
-                                                            <p className="px-1 leading-4 font-light text-gray-800 text-[11px]">{item?.bs1 || ''}</p>
+                                                            <p className="px-1 leading-4 font-[700] text-[12px]">{formatAmount(item?.b1) || '-'}</p>
+                                                            <p className="px-1 leading-4 font-light text-gray-800 text-[11px]">{formatAmount(item?.bs1) || ''}</p>
                                                             {/* Suspended Overlay */}
                                                             {item?.status != "ACTIVE" ? <div className="absolute inset-0 flex items-center justify-center bg-red-500 bg-opacity-20">
                                                                     <p className="text-red-100 text-[10px] sm:text-xs md:text-sm font-bold">SUSPENDED</p>
@@ -2854,13 +2854,13 @@ function Booking() {
                                                     >
                                                         {item.s == "ACTIVE" ? (
                                                             <div className='py-[3px]'>
-                                                                <p className="px-1 leading-4 font-[700] text-[12px]">{item?.l1 || '-'}</p>
-                                                                <p className="px-1 leading-4 font-light text-gray-800 text-[11px]">{item?.ls1 || ''}</p>
+                                                                <p className="px-1 leading-4 font-[700] text-[12px]">{formatAmount(item?.l1) || '-'}</p>
+                                                                <p className="px-1 leading-4 font-light text-gray-800 text-[11px]">{formatAmount(item?.ls1) || ''}</p>
                                                             </div>
                                                         ) : (
                                                             <div className="py-[3px] relative">
-                                                                <p className="px-1 leading-4 font-[700] text-[12px]">{item?.l1 || '-'}</p>
-                                                                <p className="px-1 leading-4 font-light text-gray-800 text-[11px]">{item?.ls1 || ''}</p>
+                                                                <p className="px-1 leading-4 font-[700] text-[12px]">{formatAmount(item?.l1) || '-'}</p>
+                                                                <p className="px-1 leading-4 font-light text-gray-800 text-[11px]">{formatAmount(item?.ls1) || ''}</p>
                                                                 {/* Suspended Overlay */}
                                                                 {item?.status != "ACTIVE" ? <div className="absolute inset-0 flex items-center justify-center bg-red-500 bg-opacity-20">
                                                                     <p className="text-red-100 text-[10px] sm:text-xs md:text-sm font-bold">SUSPENDED</p>
@@ -2878,8 +2878,8 @@ function Booking() {
                                                         onClick={() => handleBookie("t2", item?.rname, "red", item?.l2, item?.mname, "Lay", "", "l2", index)}
                                                         disabled={!item?.l2}>
                                                         <div className='py-[3px]'>
-                                                            <p className="px-1 leading-4   font-[700] text-[12px]">{item?.l2 || '-'}</p>
-                                                            <p className="px-1 leading-4  font-light text-gray-800  text-[11px]">{item?.ls2 || ''}</p>
+                                                            <p className="px-1 leading-4   font-[700] text-[12px]">{formatAmount(item?.l2) || '-'}</p>
+                                                            <p className="px-1 leading-4  font-light text-gray-800  text-[11px]">{formatAmount(item?.ls2) || ''}</p>
                                                         </div>
                                                         {item?.status != "ACTIVE" ? <div className="absolute inset-0 flex items-center justify-center bg-red-500 bg-opacity-20">
                                                                     <p className="text-red-100 text-[10px] sm:text-xs md:text-sm font-bold">SUSPENDED</p>
@@ -2896,8 +2896,8 @@ function Booking() {
                                                         disabled={!item?.l3}
                                                     >
                                                         <div className='py-[3px]'>
-                                                            <p className="px-1 leading-4   font-[700] text-[12px]">{item?.l3 || '-'}</p>
-                                                            <p className="px-1 font-light text-gray-800 leading-4   text-[11px]">{item?.ls3 || ""}</p>
+                                                            <p className="px-1 leading-4   font-[700] text-[12px]">{formatAmount(item?.l3) || '-'}</p>
+                                                            <p className="px-1 font-light text-gray-800 leading-4   text-[11px]">{formatAmount(item?.ls3) || ""}</p>
                                                         </div>
                                                         {item?.status != "ACTIVE" ? <div className="absolute inset-0 flex items-center justify-center bg-red-500 bg-opacity-20">
                                                                     <p className="text-red-100 text-[10px] sm:text-xs md:text-sm font-bold">SUSPENDED</p>
@@ -3454,8 +3454,8 @@ function Booking() {
                                                             disabled={!item?.l1}
                                                         >
                                                             <div className='py-[3px]'>
-                                                                <p className="px-1 leading-4 font-[700] text-[12px]">{item?.l1}</p>
-                                                                <p className="px-1 leading-4 font-light text-gray-800   sm:text-sm text-[11px]">{item?.ls1}</p>
+                                                                <p className="px-1 leading-4 font-[700] text-[12px]">{formatAmount(item?.l1)}</p>
+                                                                <p className="px-1 leading-4 font-light text-gray-800   sm:text-sm text-[11px]">{formatAmount(item?.ls1)}</p>
                                                             </div>
 
                                                         </button>
@@ -3476,8 +3476,8 @@ function Booking() {
                                                             disabled={!item?.b1}
                                                             className='py-[3px]'
                                                         >
-                                                            <p className="px-1 leading-4  font-[700] text-[12px]">{item?.b1}</p>
-                                                            <p className="px-1 leading-4  font-light text-gray-800   sm:text-sm text-[11px]">{item?.bs1}</p>
+                                                            <p className="px-1 leading-4  font-[700] text-[12px]">{formatAmount(item?.b1)}</p>
+                                                            <p className="px-1 leading-4  font-light text-gray-800   sm:text-sm text-[11px]">{formatAmount(item?.bs1)}</p>
                                                         </button>
                                                         {/* 
                                                         {item?.gstatus && (

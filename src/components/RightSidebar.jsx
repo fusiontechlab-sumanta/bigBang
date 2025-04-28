@@ -136,7 +136,7 @@ function RightSidebar() {
                     <tr className="border-b text-xs bg-blue-300 border-blue-500">
                       <td className="px-2 py-2 flex items-center">
                         <button className="text-white px-1 py-1 rounded mr-2 bg-blue-600" style={{ fontSize: "10px" }}>
-                          {bet.market_name === "Fancy" ? "Back" : bet.type.toUpperCase()}
+                          {bet.market_name === "FANCY_ODDS" ? "Back" : bet.type.toUpperCase()}
                         </button>
                         <div>
                           <p className="text-black font-bold" style={{ fontSize: "11px" }}>{bet.selection}</p>
@@ -145,7 +145,7 @@ function RightSidebar() {
                       </td>
                       <td className="py-2 text-center">{bet.odd_req}</td>
                       <td className="py-2 text-center">{bet.stack}</td>
-                      {bet.market_name === "Fancy" ? <td className="py-2 text-center">{(Number(bet.odd_req.split("/")[1]) / 100) * Number(bet.stack)}(-{bet.stack})</td> : <td className="py-2 text-center">{bet.odd_req * bet.stack - bet.stack}(-{bet.stack})</td>}
+                      {bet.market_name === "FANCY_ODDS" ? <td className="py-2 text-center">{(Number(bet.odd_req.split("/")[1]) / 100) * Number(bet.stack)}(-{bet.stack})</td> : <td className="py-2 text-center">{bet.odd_req * bet.stack - bet.stack}(-{bet.stack})</td>}
 
 
                     </tr>
@@ -179,7 +179,7 @@ function RightSidebar() {
                     <tr className="border-b text-xs bg-red-300 border-red-500">
                       <td className="px-2 py-2 flex items-center">
                         <button className="text-white px-1 py-1 rounded mr-2 bg-red-600" style={{ fontSize: "10px" }}>
-                          {bet.market_name === "Fancy" ? "Lay" : bet.type.toUpperCase()}
+                          {bet.market_name === "FANCY_ODDS" ? "Lay" : bet.type.toUpperCase()}
                         </button>
                         <div>
                           <p className="text-black font-bold" style={{ fontSize: "11px" }}>{bet.selection}</p>
@@ -188,7 +188,7 @@ function RightSidebar() {
                       </td>
                       <td className="py-2 text-center">{bet.odd_req}</td>
                       <td className="py-2 text-center">{bet.stack}</td>
-                      {bet.market_name === "Fancy" ? <td className="py-2 text-center">{bet.stack}(-{(Number(bet.odd_req.split("/")[1]) / 100) * Number(bet.stack)})</td> : <td className="py-2 text-center">{bet.stack}(-{bet.odd_req * bet.stack - bet.stack })</td>}
+                      {bet.market_name === "FANCY_ODDS" ? <td className="py-2 text-center">{bet.stack}(-{(Number(bet.odd_req.split("/")[1]) / 100) * Number(bet.stack)})</td> : <td className="py-2 text-center">{bet.stack}(-{bet.odd_req * bet.stack - bet.stack })</td>}
 
 
                     </tr>
