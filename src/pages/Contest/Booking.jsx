@@ -408,7 +408,7 @@ function Booking() {
 
     const handlePlaceBet = async (type, marketname, teamName, length , sid) => {
         try {
-            console.log("uuuuuuu",type, marketname, teamName, length , sid);
+            console.log("uuuuuuu",type, marketname, teamName, length , sid ,showBook[type]);
 
 
             setIsRefreshing(true); // Show loading animation
@@ -451,16 +451,24 @@ function Booking() {
             console.log(marketname, "yyyyyyyyy---");
             const getBetData = (previousBet, showBook, betType) => {
 
+                console.log( showBook[type], betType);
+                
+
                 if (!previousBet || previousBet.pl === undefined || previousBet.pl === null) {
-                    let betAmount
+                    console.log("OOOOOOOOOIIIIIIIIIIII<<<<<<<<<<<<<<<<<<<<<");
+                    
+                    let betAmount = 0;
+
                     if (marketname === "Bookmaker") {
                         betAmount = showBook[type]?.rate * Number(showBook[type]?.amount) / 100 || 0;
-                    } if (marketname === "Tied Match") {
-                        betAmount = Number(showBook[type]?.rate * Number(showBook[type]?.amount));
+                        console.log(betAmount, "Bookmaker calculation >>>>", showBook[type]?.rate * Number(showBook[type]?.amount) / 100);
+                    } else if (marketname === "Tied Match") {
+                        betAmount = Math.round((Number(showBook.t8.rate).toFixed(2) -1 )*Number(showBook.t8.amount).toFixed(2));
+                        console.log(betAmount, "Bookmaker calculation >>>>", showBook[type]?.rate * Number(showBook[type]?.amount) / 100);
                     } else {
                         betAmount = showBook[type]?.betAmount || 0;
                     }
-
+                    
                     const betStack = showBook[type]?.amount || 0;
 
                     if (betType === "Back") {
@@ -540,17 +548,23 @@ function Booking() {
 
                 }
 
-                let betAmt
-                const prevPl = Number(previousBet?.previous_bet1); // Extract pl (-8)
+                let betAmt = 0
+                const prevPl = Number(previousBet?.previous_bet1); // Extract PL (-8)
                 const previousBetstack = Number(previousBet?.previous_bet2); // Extract stack
                 const previousBetstack3 = Number(previousBet?.previous_bet3); // Extract stack
+
+                console.log(previousBetstack,prevPl,"ooooo>>>>>>>MMMM");
+                
+                
                 if (marketname === "Bookmaker") {
-                    betAmt = Number(showBook[type]?.rate * Number(showBook[type]?.amount) / 100); // Extract betAmount (23)
-                } if (marketname === "Tied Match") {
-                    betAmt = Number(showBook[type]?.rate * Number(showBook[type]?.amount));
+                    betAmt = Number(showBook[type]?.rate * Number(showBook[type]?.amount) / 100); // Extract betAmount
+                    console.log(betAmt, "Bookmaker >>>>");
+                } else if (marketname === "Tied Match") {
+                    betAmt = Math.round((Number(showBook.t8.rate).toFixed(2) -1 )*Number(showBook.t8.amount).toFixed(2)); // Extract betAmount
                 } else {
-                    betAmt = Number(showBook[type]?.betAmount); // Extract betAmount (23)
+                    betAmt = Number(showBook[type]?.betAmount); // Extract betAmount
                 }
+                
 
                 const betstack = Number(showBook[type]?.amount); // Extract betstack
                 // const isMatchingSelection = showBook.t1.name === item;
@@ -558,10 +572,10 @@ function Booking() {
                 let betData1, betData2, betData3
 
                 if (betType === "Back") {
+// console.log(length,betType);
 
                     if (length === 2) {
                         if (betIndx === 0) {
-
 
                             betData1 = prevPl + betAmt;
                             betData2 = previousBetstack - betstack;
@@ -673,14 +687,17 @@ function Booking() {
                 let team_bet2 = 0;
                 let team_bet3 = 0;
 
-                let betAmount;
+                let betAmount = 0;
+
                 if (marketname === "Bookmaker") {
-                    betAmount = showBook[type]?.rate * Number(showBook[type]?.amount) / 100 || 0;
-                } if (marketname === "Tied Match") {
-                    betAmount = Number(showBook[type]?.rate * Number(showBook[type]?.amount));
+                    betAmount = (showBook[type]?.rate * Number(showBook[type]?.amount)) / 100 || 0;
+                    console.log(betAmount, "Bookmaker >>>>");
+                } else if (marketname === "Tied Match") {
+                    betAmount = Math.round((Number(showBook.t8.rate).toFixed(2) -1 )*Number(showBook.t8.amount).toFixed(2)) || 0;
                 } else {
                     betAmount = showBook[type]?.betAmount || 0;
                 }
+                
 
                 const betStack = showBook[type]?.amount || 0;
 
@@ -1088,7 +1105,7 @@ function Booking() {
 
 
 
-    // console.log("lastBetValueFANCY", t3Data)
+    // console.log("lastBetValueFANCY", t2Data.bm1.oddDatas)
 
     // console.log(lastBetValueFANCY?.fancyBetListData, "+++++++++++++lastBetValue+++++++++");
 
@@ -2369,11 +2386,11 @@ function Booking() {
                                                                     <>
                                                                         {betType === "Back" ? (
                                                                             <p className={`${showBook.t8.name === item?.rname ? 'text-[#45A255]' : 'text-red-500'} font-[700]`}>
-                                                                                {showBook.t8.name === item?.rname ? `(${Number(showBook.t8.rate).toFixed(2) * Number(showBook.t8.amount).toFixed(2)})` : `(${Number(showBook.t8.amount).toFixed(2)})`}
+                                                                                {showBook.t8.name === item?.rname ? `(${Math.round((Number(showBook.t8.rate).toFixed(2) -1 )*Number(showBook.t8.amount).toFixed(2)) })` : `(${Number(showBook.t8.amount).toFixed(2)})`}
                                                                             </p>
                                                                         ) : (
                                                                             <p className={`${showBook.t8.name === item?.rname ? 'text-red-500' : 'text-[#45A255]'} font-[700]`}>
-                                                                                {showBook.t8.name === item?.rname ? `(${Number(showBook.t8.rate).toFixed(2) * Number(showBook.t8.amount).toFixed(2)})` : `(${Number(showBook.t8.amount).toFixed(2)})`}
+                                                                                {showBook.t8.name === item?.rname ? `(${Math.round((Number(showBook.t8.rate).toFixed(2) -1 )*Number(showBook.t8.amount).toFixed(2)) })` : `(${Number(showBook.t8.amount).toFixed(2)})`}
                                                                             </p>
                                                                         )}
                                                                     </>
@@ -2416,7 +2433,7 @@ function Booking() {
                                                                                         <>
                                                                                             {showBook.t8.name === item?.rname ? (
                                                                                                 <p className={`${showBook.t8.name === item?.rname ? 'text-[#45A255]' : 'text-red-500'} font-[700]`}>
-                                                                                                    {`(${index === 0 ? Number(previousBet?.["Tied Match"]?.previous_bet1) : Number(previousBet?.["Tied Match"]?.previous_bet2)} + ${Number(showBook.t8.rate).toFixed(2) * Number(showBook.t8.amount).toFixed(2)})`}
+                                                                                                    {`(${index === 0 ? Number(previousBet?.["Tied Match"]?.previous_bet1) : Number(previousBet?.["Tied Match"]?.previous_bet2)} + ${Math.round((Number(showBook.t8.rate).toFixed(2) -1 )*Number(showBook.t8.amount).toFixed(2)) })`}
                                                                                                 </p>
                                                                                             ) : (
                                                                                                 <p className={`${showBook.t8.name === item?.rname ? 'text-[#45A255]' : 'text-red-500'} font-[700]`}>
@@ -2428,7 +2445,7 @@ function Booking() {
                                                                                         <>
                                                                                             {showBook.t8.name === item?.rname ? (
                                                                                                 <p className={`${showBook.t8.name === item?.rname ? 'text-red-500' : 'text-[#45A255]'} font-[700]`}>
-                                                                                                    {`(${index === 0 ? Number(previousBet?.["Tied Match"]?.previous_bet1) : Number(previousBet?.["Tied Match"]?.previous_bet2)} - ${Number(showBook.t8.rate).toFixed(2) * Number(showBook.t8.amount).toFixed(2)})`}
+                                                                                                    {`(${index === 0 ? Number(previousBet?.["Tied Match"]?.previous_bet1) : Number(previousBet?.["Tied Match"]?.previous_bet2)} - ${Math.round((Number(showBook.t8.rate).toFixed(2) -1 )*Number(showBook.t8.amount).toFixed(2)) })`}
                                                                                                 </p>
                                                                                             ) : (
                                                                                                 <p className={`${showBook.t8.name === item?.rname ? 'text-red-500' : 'text-[#45A255]'} font-[700]`}>
@@ -2761,7 +2778,7 @@ function Booking() {
                                                                                     <>
                                                                                         {showBook.t2.name === item?.rname ? (
                                                                                             <p className={`${showBook.t2.name === item?.rname ? 'text-[#45A255]' : 'text-red-500'} font-[700]`}>
-                                                                                                {`(${index === 0 ? Number(previousBet?.["Bookmaker"]?.previous_bet1) : Number(previousBet?.["Bookmaker"]?.previous_bet2)} + ${Number(showBook.t2.rate)})`}
+                                                                                                {`(${index === 0 ? Number(previousBet?.["Bookmaker"]?.previous_bet1) : Number(previousBet?.["Bookmaker"]?.previous_bet2)} + ${(showBook.t2.rate) * Number(showBook.t2.amount) / 100})`}
                                                                                             </p>
                                                                                         ) : (
                                                                                             <p className={`${showBook.t2.name === item?.rname ? 'text-[#45A255]' : 'text-red-500'} font-[700]`}>
@@ -2774,7 +2791,7 @@ function Booking() {
                                                                                         {showBook.t2.name === item?.rname ? (
                                                                                             <p className={`${showBook.t2.name === item?.rname ? 'text-red-500' : 'text-[#45A255]'} font-[700]`}>
 
-                                                                                                {`(${index === 0 ? Number(previousBet?.["Bookmaker"]?.previous_bet1) : Number(previousBet?.["Bookmaker"]?.previous_bet2)} - ${Number(showBook.t2.rate)})`}
+                                                                                                {`(${index === 0 ? Number(previousBet?.["Bookmaker"]?.previous_bet1) : Number(previousBet?.["Bookmaker"]?.previous_bet2)} - ${(showBook.t2.rate) * Number(showBook.t2.amount) / 100})`}
                                                                                             </p>
                                                                                         ) : (
                                                                                             <p className={`${showBook.t2.name === item?.rname ? 'text-red-500' : 'text-[#45A255]'} font-[700]`}>
@@ -2959,7 +2976,7 @@ function Booking() {
                                                             {/* Place Bet Button */}
                                                             <button
 
-                                                                onClick={() => handlePlaceBet("t2", t2Data?.bm1.gtype, item?.rname, t2Data[0]?.bm1?.oddDatas.length)}
+                                                                onClick={() => handlePlaceBet("t2", t2Data?.bm1.gtype, item?.rname, t2Data?.bm1?.oddDatas?.length)}
                                                                 // disabled={item?.s == "SUSPENDED"}
                                                                 className={`flex max-lg:hidden justify-center items-center h-full border rounded-md border-gray-600 
                                                                 ${showBook.t2.amount
@@ -2989,7 +3006,7 @@ function Booking() {
 
                                                             </button>
                                                             <button
-                                                                onClick={() => handlePlaceBet("t2", t2Data?.bm1.gtype, item?.rname, t2Data[0]?.bm1?.oddDatas.length)}
+                                                                onClick={() => handlePlaceBet("t2", t2Data?.bm1.gtype, item?.rname, t2Data?.bm1?.oddDatas?.length)}
                                                                 className={`flex  justify-center items-center h-full bg-[#577094] border rounded-md border-gray-600
                                                                     ${showBook.t2.amount
                                                                         ? 'bg-gradient-to-t from-[#1e714f] to-[#16a34a]'
