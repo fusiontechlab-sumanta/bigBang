@@ -50,10 +50,10 @@ function Header() {
         mobile: '',
         password: '',
         confirmPassword: ''
-      });
+    });
 
-      const [registererrorMessage, setRegisterErrorMessage] = useState('');
-      const [registerloading, setRegisterLoading] = useState(false);
+    const [registererrorMessage, setRegisterErrorMessage] = useState('');
+    const [registerloading, setRegisterLoading] = useState(false);
 
     const pathSegments = location.pathname.split("/");
 
@@ -164,9 +164,28 @@ function Header() {
     };
 
     const Logout = () => {
-        localStorage.clear();
-        setAcount(false)
-        window.location.reload();
+        const myHeaders = new Headers();
+        myHeaders.append("Authorization", `Bearer ${token}`);
+        const requestOptions = {
+            method: "POST",
+            headers: myHeaders,
+            redirect: "follow",
+        };
+        fetch("https://admin.bigbbang.com/api/user-logout", requestOptions)
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`Logout failed with status ${response.status}`);
+                }
+                return response.json(); // assuming the server returns JSON
+            })
+            .then((result) => {
+                localStorage.clear();
+                setAcount(false)
+                window.location.reload();
+            })
+            .catch((error) => {
+                console.error("Logout error:", error);
+            });
     }
 
     const baseUrl = `${import.meta.env.VITE_BASE_URL}${import.meta.env.VITE_POINT_BALANCE}`;
@@ -225,52 +244,52 @@ function Header() {
     const handleRegister = async (e) => {
         e.preventDefault();
         const { name, username, mobile, password, confirmPassword } = registerfronData;
-      
+
         if (password !== confirmPassword) {
-          setRegisterErrorMessage('Passwords do not match.');
-          return;
+            setRegisterErrorMessage('Passwords do not match.');
+            return;
         }
-      
+
         setRegisterLoading(true);
         setRegisterErrorMessage('');
-      
+
         try {
-          const formdata = new FormData();
-          formdata.append('username', username);
-          formdata.append('name', name);
-          formdata.append('mobile', mobile);
-          formdata.append('password', password);
-      
-          const requestOptions = {
-            method: 'POST',
-            body: formdata,
-          };
-      
-          const response = await fetch('https://admin.bigbbang.com/api/register', requestOptions);
-          const result = await response.json();
-      
-          if (response.ok) {
-            toastSuccess('Registration successful!');
-            setRegisterfronData({
-              name: '',
-              username: '',
-              mobile: '',
-              password: '',
-              confirmPassword: ''
-            });
-            setRegisterfron(false);
-          } else {
-            setRegisterErrorMessage(result.message || 'Registration failed.');
-          }
+            const formdata = new FormData();
+            formdata.append('username', username);
+            formdata.append('name', name);
+            formdata.append('mobile', mobile);
+            formdata.append('password', password);
+
+            const requestOptions = {
+                method: 'POST',
+                body: formdata,
+            };
+
+            const response = await fetch('https://admin.bigbbang.com/api/register', requestOptions);
+            const result = await response.json();
+
+            if (response.ok) {
+                toastSuccess('Registration successful!');
+                setRegisterfronData({
+                    name: '',
+                    username: '',
+                    mobile: '',
+                    password: '',
+                    confirmPassword: ''
+                });
+                setRegisterfron(false);
+            } else {
+                setRegisterErrorMessage(result.message || 'Registration failed.');
+            }
         } catch (error) {
-          console.error(error);
-          setRegisterErrorMessage('Something went wrong. Please try again.');
+            console.error(error);
+            setRegisterErrorMessage('Something went wrong. Please try again.');
         } finally {
-          setRegisterLoading(false);
+            setRegisterLoading(false);
         }
-      };
-      
-      
+    };
+
+
 
     return (
         <>
@@ -637,123 +656,123 @@ function Header() {
                 </div>
             )}
 
-{registerfron && (
-  <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center p-2 items-start z-50">
-    <div className="bg-white rounded-md w-96 shadow-lg">
-      <h2 className="text-xl font-semibold text-center mb-4 bg-gray-800 text-white py-2">
-        Register
-      </h2>
+            {registerfron && (
+                <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center p-2 items-start z-50">
+                    <div className="bg-white rounded-md w-96 shadow-lg">
+                        <h2 className="text-xl font-semibold text-center mb-4 bg-gray-800 text-white py-2">
+                            Register
+                        </h2>
 
-      <form onSubmit={handleRegister} className="space-y-4">
-        {registererrorMessage && (
-          <div className="text-red-500 text-sm mb-4 px-4">
-            {registererrorMessage}
-          </div>
-        )}
+                        <form onSubmit={handleRegister} className="space-y-4">
+                            {registererrorMessage && (
+                                <div className="text-red-500 text-sm mb-4 px-4">
+                                    {registererrorMessage}
+                                </div>
+                            )}
 
-        <div className="p-4 space-y-3">
-          {/* Username */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Username <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              name="username"
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md"
-              placeholder="Enter Username"
-              value={registerfronData.username}
-              onChange={handleChange}
-              required
-            />
-          </div>
+                            <div className="p-4 space-y-3">
+                                {/* Username */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">
+                                        Username <span className="text-red-500">*</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="username"
+                                        className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md"
+                                        placeholder="Enter Username"
+                                        value={registerfronData.username}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
 
-          {/* Full Name */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Full Name <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              name="name"
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md"
-              placeholder="Enter Full Name"
-              value={registerfronData.name}
-              onChange={handleChange}
-              required
-            />
-          </div>
+                                {/* Full Name */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">
+                                        Full Name <span className="text-red-500">*</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="name"
+                                        className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md"
+                                        placeholder="Enter Full Name"
+                                        value={registerfronData.name}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
 
-          {/* Mobile */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Mobile <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="tel"
-              name="mobile"
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md"
-              placeholder="Enter Mobile"
-              value={registerfronData.mobile}
-              onChange={handleChange}
-              required
-            />
-          </div>
+                                {/* Mobile */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">
+                                        Mobile <span className="text-red-500">*</span>
+                                    </label>
+                                    <input
+                                        type="tel"
+                                        name="mobile"
+                                        className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md"
+                                        placeholder="Enter Mobile"
+                                        value={registerfronData.mobile}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
 
-          {/* Password */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Password <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="password"
-              name="password"
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md"
-              placeholder="Enter Password"
-              value={registerfronData.password}
-              onChange={handleChange}
-              required
-            />
-          </div>
+                                {/* Password */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">
+                                        Password <span className="text-red-500">*</span>
+                                    </label>
+                                    <input
+                                        type="password"
+                                        name="password"
+                                        className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md"
+                                        placeholder="Enter Password"
+                                        value={registerfronData.password}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
 
-          {/* Confirm Password */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Confirm Password <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="password"
-              name="confirmPassword"
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md"
-              placeholder="Confirm Password"
-              value={registerfronData.confirmPassword}
-              onChange={handleChange}
-              required
-            />
-          </div>
+                                {/* Confirm Password */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">
+                                        Confirm Password <span className="text-red-500">*</span>
+                                    </label>
+                                    <input
+                                        type="password"
+                                        name="confirmPassword"
+                                        className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md"
+                                        placeholder="Confirm Password"
+                                        value={registerfronData.confirmPassword}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
 
-          {/* Buttons */}
-          <div className="flex justify-end gap-2 mt-2">
-            <button
-              type="button"
-              onClick={() => setRegisterfron(false)}
-              className="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded-md font-semibold"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="bg-[#262524] hover:bg-[#1c1b1a] text-white px-6 py-2 rounded-md font-semibold"
-              disabled={registerloading}
-            >
-              {registerloading ? 'Submitting...' : 'Submit'}
-            </button>
-          </div>
-        </div>
-      </form>
-    </div>
-  </div>
-)}
+                                {/* Buttons */}
+                                <div className="flex justify-end gap-2 mt-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => setRegisterfron(false)}
+                                        className="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded-md font-semibold"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className="bg-[#262524] hover:bg-[#1c1b1a] text-white px-6 py-2 rounded-md font-semibold"
+                                        disabled={registerloading}
+                                    >
+                                        {registerloading ? 'Submitting...' : 'Submit'}
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
 
             {open && <LiveBets hideLiveBets={hideLiveBets} />}
             {/* Show the LoginWarningModal only if it's small screen */}

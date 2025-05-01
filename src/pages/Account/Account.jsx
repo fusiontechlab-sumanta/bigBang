@@ -5,9 +5,28 @@ import { Link } from 'react-router-dom'
 
 function Account() {
     const Logout = () => {
-        localStorage.clear();
-        window.location.reload();
-        
+        const myHeaders = new Headers();
+        myHeaders.append("Authorization", `Bearer ${token}`);
+        const requestOptions = {
+            method: "POST",
+            headers: myHeaders,
+            redirect: "follow",
+        };
+        fetch("https://admin.bigbbang.com/api/user-logout", requestOptions)
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`Logout failed with status ${response.status}`);
+                }
+                return response.json(); // assuming the server returns JSON
+            })
+            .then((result) => {
+                localStorage.clear();
+                setAcount(false)
+                window.location.reload();
+            })
+            .catch((error) => {
+                console.error("Logout error:", error);
+            });
     }
     const storedToken = localStorage.getItem('token');
     const userName=localStorage.getItem("username")
