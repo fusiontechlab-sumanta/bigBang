@@ -88,10 +88,31 @@ function App() {
 
     // Delete the token every 30 seconds
     const interval = setInterval(() => {
-      localStorage.clear();
-      setUser(false);
-
-      window.location.reload()
+      const myHeaders = new Headers();
+      const storedToken = localStorage.getItem('token');
+        myHeaders.append("Authorization", `Bearer ${storedToken}`);
+        const requestOptions = {
+            method: "POST",
+            headers: myHeaders,
+            redirect: "follow",
+        };
+        fetch("https://admin.bigbbang.com/api/user-logout", requestOptions)
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`Logout failed with status ${response.status}`);
+                }
+                return response.json(); // assuming the server returns JSON
+            })
+            .then((result) => {
+              localStorage.clear();
+              setUser(false);
+        
+              window.location.reload()
+            })
+            .catch((error) => {
+                console.error("Logout error:", error);
+            });
+ 
     }, 1800000);
 
     return () => clearInterval(interval); // Cleanup on unmount
