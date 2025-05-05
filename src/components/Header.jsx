@@ -464,10 +464,10 @@ function Header() {
                                     <li className='border-b border-b-gray-400 px-2'>
                                         <Link to='/bet-history' onClick={() => setAcount(false)}>Bets History </Link>
                                     </li>
-                                    <li className='border-b border-b-gray-400 px-2'>
+                                    {/* <li className='border-b border-b-gray-400 px-2'>
                                         <Link to='/profit-loss' onClick={() => setAcount(false)}>Profit & Loss</Link>
 
-                                    </li>
+                                    </li> */}
                                     <li className='border-b border-b-gray-400 px-2'>
                                         <Link to='/password-history' onClick={() => setAcount(false)}>Password History</Link>
 

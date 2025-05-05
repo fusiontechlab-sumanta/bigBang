@@ -83,7 +83,7 @@ function Account() {
                             </div>
                         </div>
                     </Link>
-                    <Link to='/profit-loss' className='grid grid-cols-2 border-b border-gray-200 py-2 px-2 '>
+                    {/* <Link to='/profit-loss' className='grid grid-cols-2 border-b border-gray-200 py-2 px-2 '>
                         <p className='text-[#2889CE] font-extrabold text-[4vw]'>Profit & Loss</p>
                         <div className='flex justify-end items-center '>
                             <div className='border border-black h-[6.7vw] w-[6.7vw] rounded-md flex justify-center items-center'>
@@ -91,7 +91,7 @@ function Account() {
 
                             </div>
                         </div>
-                    </Link>
+                    </Link> */}
                     <Link to='/password-history' className='grid grid-cols-2 border-b border-gray-200 py-2 px-2 '>
                         <p className='text-[#2889CE] font-extrabold text-[4vw]'>Password History</p>
                         <div className='flex justify-end items-center '>
