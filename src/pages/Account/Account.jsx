@@ -6,7 +6,8 @@ import { Link } from 'react-router-dom'
 function Account() {
     const Logout = () => {
         const myHeaders = new Headers();
-        myHeaders.append("Authorization", `Bearer ${token}`);
+        const storedToken = localStorage.getItem('token');
+        myHeaders.append("Authorization", `Bearer ${storedToken}`);
         const requestOptions = {
             method: "POST",
             headers: myHeaders,
@@ -21,7 +22,7 @@ function Account() {
             })
             .then((result) => {
                 localStorage.clear();
-                setAcount(false)
+                // setAcount(false)
                 window.location.reload();
             })
             .catch((error) => {
