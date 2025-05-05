@@ -3425,7 +3425,7 @@ function Booking() {
                                                             <div>
                                                                 <a
                                                                     className="capitalize text-gray-900 font-semibold"
-                                                                    onClick={() => fancyBet(index)}
+                                                                    onClick={() => fancyBet(item.sid)}
                                                                 >
                                                                     {item.rname}
                                                                 </a>
@@ -3438,11 +3438,11 @@ function Booking() {
 
                                                                             return (
                                                                                 <div key={fancyindex} className="flex items-center">
-                                                                                 {Number(fancyitem.index_order) === index && (
+                                                                                 {Number(fancyitem.sid) === item.sid && (
                                                                                         <FaLongArrowAltRight className="mr-2 text-red-500" />
                                                                                     )}
-                                                                                    <p className={`font-[700] ${Number(fancyitem.index_order) === index ? 'text-red-500' : 'text-red-500'}`}>
-                                                                                        {Number(fancyitem.index_order) === index
+                                                                                    <p className={`font-[700] ${Number(fancyitem.sid) === item.sid? 'text-red-500' : 'text-red-500'}`}>
+                                                                                        {Number(fancyitem.sid) === item.sid
                                                                                             ? Math.min(...betList.map(bet => bet.amount).filter(amount => amount < 0)).toFixed(2)
                                                                                             : null}
                                                                                     </p>
