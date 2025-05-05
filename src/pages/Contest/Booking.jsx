@@ -1105,7 +1105,7 @@ function Booking() {
 
 
 
-    // console.log("lastBetValueFANCY", t2Data.bm1.oddDatas)
+    // console.log("lastBetValueFANCY", lastBetValueFANCY)
 
     // console.log(lastBetValueFANCY?.fancyBetListData, "+++++++++++++lastBetValue+++++++++");
 
@@ -3435,7 +3435,6 @@ function Booking() {
                                                                     <div className="mt-0.1">
                                                                         {lastBetValueFANCY?.fancyBetListData?.map((fancyitem, fancyindex) => {
                                                                             const betList = typeof fancyitem?.bet_list === "string" ? JSON.parse(fancyitem.bet_list) : fancyitem.bet_list;
-
                                                                             return (
                                                                                 <div key={fancyindex} className="flex items-center">
                                                                                  {Number(fancyitem.sid) === item.sid && (
