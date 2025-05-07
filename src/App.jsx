@@ -72,52 +72,51 @@ function App() {
 
   // }, []);
   useEffect(() => {
-    // Live data cricket
+    // Emit socket event once on mount
     socket.emit('getLiveDataByEventId');
-
-    const checkToken = () => {
+  
+    const checkTokenAndLogout = () => {
       const storedToken = localStorage.getItem('token');
-      if (storedToken) {
-        setUser(true);
-      } else {
+  
+      if (!storedToken) {
         setUser(false);
+        return;
       }
-    };
-
-    checkToken(); // Initial check
-
-    // Delete the token every 30 seconds
-    const interval = setInterval(() => {
+  
+      setUser(true);
+  
+      // Optional: validate token with server (e.g. session expired)
       const myHeaders = new Headers();
-      const storedToken = localStorage.getItem('token');
-        myHeaders.append("Authorization", `Bearer ${storedToken}`);
-        const requestOptions = {
-            method: "POST",
-            headers: myHeaders,
-            redirect: "follow",
-        };
-        fetch("https://admin.bigbbang.com/api/user-logout", requestOptions)
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error(`Logout failed with status ${response.status}`);
-                }
-                return response.json(); // assuming the server returns JSON
-            })
-            .then((result) => {
-              localStorage.clear();
-              setUser(false);
-        
-              window.location.reload()
-            })
-            .catch((error) => {
-                console.error("Logout error:", error);
-            });
- 
-    }, 1800000);
-
+      myHeaders.append("Authorization", `Bearer ${storedToken}`);
+  
+      const requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        redirect: "follow",
+      };
+  
+      fetch("https://admin.bigbbang.com/api/user-logout", requestOptions)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`Logout failed with status ${response.status}`);
+          }
+          return response.json(); // assuming the server returns JSON
+        })
+        .then((result) => {
+          localStorage.clear();
+          setUser(false);
+          window.location.reload();
+        })
+        .catch((error) => {
+          console.error("Logout error:", error);
+        });
+    };
+  
+    const interval = setInterval(checkTokenAndLogout, 1800000); // Every 1 min
+  
     return () => clearInterval(interval); // Cleanup on unmount
   }, []);
-
+  
 
 
 
