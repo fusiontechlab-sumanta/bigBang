@@ -150,7 +150,7 @@ function App() {
                     <Route path="/myprofile" element={<MyProfile />} />
                   </Route>
                   <Route path="/" element={<Home />} />
-                  <Route path="/paymentSuccess" element={<Success />} />
+                   <Route path="/paymentSuccess" element={<Success />} />
                   <Route path="/paymentFailure" element={<Failure />} />
                   <Route path="/${pathSegments}" element={<Navigate to="/" replace />} />
                   <Route path="/inplay" element={<InPlay />} />
