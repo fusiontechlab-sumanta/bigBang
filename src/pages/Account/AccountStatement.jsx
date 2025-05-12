@@ -4,13 +4,14 @@ import SmallLoading from "../../components/SmallLoading";
 import { getApiWithToken } from "../../utils/api";
 import { formatDateTime } from "../../utils/getuserdata";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa"; // Import FontAwesome icons
+import axios from "axios";
 
 function AccountStatement() {
     const [dateRange, setDateRange] = useState({
         from: new Date().toISOString().split("T")[0],
         to: new Date().toISOString().split("T")[0],
     });
-
+    const [amount, setAmount] = useState("");
     const [selectedDataSource, setSelectedDataSource] = useState("");
     const [filteredData, setFilteredData] = useState([]);
     const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
@@ -104,6 +105,33 @@ function AccountStatement() {
         });
     };
 
+
+    // handel payement function for phonepe
+
+    const handlePayment = async () => {
+        
+        const transactionId = `TXN${Date.now()}`;
+        console.log(transactionId,amount,"kkkkkkkkkkkk")
+        try {
+            const response = await axios.post("http://localhost:5000/pay", {
+                amount: parseFloat(amount),
+                mobile: "9124561064",
+                transactionId,
+            });
+
+            if (response.data.success) {
+                const url = response.data.data.instrumentResponse.redirectInfo.url;
+                window.location.href = url;
+            } else {
+                alert("Payment request failed");
+            }
+        } catch (error) {
+            console.error("Error:", error.message);
+        }
+    };
+
+    //   function ends here
+
     useEffect(() => {
         if (AccountStatement?.data) {
             setFilteredData(AccountStatement.data);
@@ -151,7 +179,7 @@ function AccountStatement() {
                         className="appearance-none w-full bg-[#e5e7ea] border border-[#ccc] rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         value={dateRange.from}
                         onChange={(e) => setDateRange({ ...dateRange, from: e.target.value })}
-                    />                   
+                    />
                 </div>
                 <div className="w-full text-[0.875rem]">
                     <input
@@ -166,8 +194,8 @@ function AccountStatement() {
                         onClick={handleGetStatement}
                         disabled={!selectedDataSource || !dateRange.from || !dateRange.to}
                         className={`${selectedDataSource && dateRange.from && dateRange.to
-                                ? "bg-[#264151]" // Blue when all data is filled
-                                : "bg-[#697C87]" // Gray when data is incomplete
+                            ? "bg-[#264151]" // Blue when all data is filled
+                            : "bg-[#697C87]" // Gray when data is incomplete
                             } text-white font-bold px-3 py-1 rounded-sm text-sm w-[100%] h-[100%]`}
                     >
                         Get Statement
@@ -281,6 +309,24 @@ function AccountStatement() {
                     </div>
                 </div>
             </div>
+
+            {/* phonepe code  */}
+            <div className="flex justify-center mt-6">
+                {/* <h2>Add Money</h2> */}
+                <input
+                    type="number"
+                    placeholder="Enter Amount"
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                />
+            </div> 
+            <button
+                onClick={handlePayment}
+                className="w-full bg-blue-600 text-white py-2 rounded-md bg-blue-600 transition duration-300"
+            >
+                Pay with PhonePe
+            </button>
         </div>
     );
 

@@ -21,6 +21,8 @@ import Loading from './components/Loading';
 import './globalsocket'
 import './socket'
 import socket from './socket';
+import Success from './pages/Success';
+import Failure from './pages/Failure';
 
 
 const queryClient = new QueryClient();
@@ -148,6 +150,8 @@ function App() {
                     <Route path="/myprofile" element={<MyProfile />} />
                   </Route>
                   <Route path="/" element={<Home />} />
+                  <Route path="/paymentSuccess" element={<Success />} />
+                  <Route path="/paymentFailure" element={<Failure />} />
                   <Route path="/${pathSegments}" element={<Navigate to="/" replace />} />
                   <Route path="/inplay" element={<InPlay />} />
                   <Route path="/cricket" element={<Cricket />} />
