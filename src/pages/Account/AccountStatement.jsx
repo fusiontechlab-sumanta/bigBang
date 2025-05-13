@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useQuery } from "react-query";
 import SmallLoading from "../../components/SmallLoading";
 import { getApiWithToken } from "../../utils/api";
+import { toastError, toastSuccess } from '../../utils/notifyCustom';
 import { formatDateTime } from "../../utils/getuserdata";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa"; // Import FontAwesome icons
 import axios from "axios";
@@ -108,27 +109,34 @@ function AccountStatement() {
 
     // handel payement function for phonepe
 
-    const handlePayment = async () => {
-        
-        const transactionId = `TXN${Date.now()}`;
-        console.log(transactionId,amount,"kkkkkkkkkkkk")
-        try {
-            const response = await axios.post("http://localhost:5000/pay", {
-                amount: parseFloat(amount),
-                mobile: "9124561064",
-                transactionId,
-            });
+  const handlePayment = async () => {
+    const transactionId = `TXN${Date.now()}`;
+    console.log(transactionId, amount, "kkkkkkkkkkkk");
 
-            if (response.data.success) {
-                const url = response.data.data.instrumentResponse.redirectInfo.url;
-                window.location.href = url;
-            } else {
-                alert("Payment request failed");
-            }
-        } catch (error) {
-            console.error("Error:", error.message);
+    try {
+        const response = await axios.post("https://admin.bigbbang.com/api/payment", {
+            amount: amount,
+            user_id: 582
+        });
+
+        console.log(response.data, "kkkkkkkkk");
+
+        if (response?.data) {
+            console.log("hiiiiiiiiiii");
+            // Directly redirect to the URL from response.data
+            const url = response.data;
+            window.location.href = url;
+        } else {
+            toastError("Payment failed");
+            window.location.reload()
+           window.location.href = "/";
         }
-    };
+    } catch (error) {
+        console.error("Error:", error.message);
+        toastError("Payment failed");
+    }
+};
+
 
     //   function ends here
 
