@@ -109,33 +109,75 @@ function AccountStatement() {
 
     // handel payement function for phonepe
 
-  const handlePayment = async () => {
+const handlePayment = async () => {
     const transactionId = `TXN${Date.now()}`;
-    console.log(transactionId, amount, "kkkkkkkkkkkk");
+    console.log(transactionId, amount, "Initiating payment...");
 
     try {
-        const response = await axios.post("https://admin.bigbbang.com/api/payment", {
-            amount: amount,
-            user_id: 582
-        });
+        // Hit the API using GET with amount in query
+      const url = `https://bijoligrill.co/initiate-payment/?amount=${amount}`;
+  window.location.href = url; // let the browser handle it directly
 
-        console.log(response.data, "kkkkkkkkk");
-
-        if (response?.data) {
-            console.log("hiiiiiiiiiii");
-            // Directly redirect to the URL from response.data
-            const url = response.data;
-            window.location.href = url;
-        } else {
-            toastError("Payment failed");
-            window.location.reload()
-           window.location.href = "/";
-        }
     } catch (error) {
         console.error("Error:", error.message);
         toastError("Payment failed");
+        // window.location.href = "/"; // Redirect to homepage on error
     }
 };
+
+
+
+//   const handlePayment = async () => {
+//     const transactionId = `TXN${Date.now()}`;
+//     console.log(transactionId, amount, "kkkkkkkkkkkk");
+
+//     try {
+//         const response = await axios.post("https://bijoligrill.co/wp-json/custom-phonepe/v1/initiate/", {
+//             amount: amount
+           
+//         });
+
+//         console.log(response, "kkkkkkkkk");
+
+//         if (response?.data) {
+//             console.log("hiiiiiiiiiii");
+//             // Directly redirect to the URL from response.data
+//             const url = response.data;
+//             window.location.href = url;
+//         } else {
+//             toastError("Payment failed");
+//             window.location.reload()
+//            window.location.href = "/";
+//         }
+//     } catch (error) {
+//         console.error("Error:", error.message);
+//         toastError("Payment failed");
+//     }
+// };
+// const handlePayment = async () => {
+//     // const transactionId = TXN${Date.now()};
+//       const transactionId = `TXN${Date.now()}`;
+//     console.log(transactionId, amount, "kkkkkkkkkkkk");
+
+//     try {
+//         const response = await axios.post("https://bijoligrill.co/wp-json/custom-phonepe/v1/initiate/", {
+//             amount: amount
+//         });
+
+//         console.log(response.data, "response from WordPress");
+
+//         if (response?.data?.success && response.data.redirect_url) {
+//             // Redirect user to PhonePe payment page
+//             window.location.href = response.data.redirect_url;
+//         } else {
+//             toastError("Payment failed");
+//             window.location.reload();
+//         }
+//     } catch (error) {
+//         console.error("Error:", error.message);
+//         toastError("Payment failed");
+//     }
+// };
 
 
     //   function ends here
