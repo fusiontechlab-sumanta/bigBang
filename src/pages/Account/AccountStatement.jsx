@@ -5,6 +5,7 @@ import { getApiWithToken } from "../../utils/api";
 import { toastError, toastSuccess } from '../../utils/notifyCustom';
 import { formatDateTime } from "../../utils/getuserdata";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa"; // Import FontAwesome icons
+import qr_Code from '../../assets/qr_Code.png'
 import axios from "axios";
 
 function AccountStatement() {
@@ -109,75 +110,75 @@ function AccountStatement() {
 
     // handel payement function for phonepe
 
-const handlePayment = async () => {
-    const transactionId = `TXN${Date.now()}`;
-    console.log(transactionId, amount, "Initiating payment...");
+    const handlePayment = async () => {
+        const transactionId = `TXN${Date.now()}`;
+        console.log(transactionId, amount, "Initiating payment...");
 
-    try {
-        // Hit the API using GET with amount in query
-      const url = `https://bijoligrill.co/initiate-payment/?amount=${amount}`;
-  window.location.href = url; // let the browser handle it directly
+        try {
+            // Hit the API using GET with amount in query
+            const url = `https://bijoligrill.co/initiate-payment/?amount=${amount}`;
+            window.location.href = url; // let the browser handle it directly
 
-    } catch (error) {
-        console.error("Error:", error.message);
-        toastError("Payment failed");
-        // window.location.href = "/"; // Redirect to homepage on error
-    }
-};
+        } catch (error) {
+            console.error("Error:", error.message);
+            toastError("Payment failed");
+            // window.location.href = "/"; // Redirect to homepage on error
+        }
+    };
 
 
 
-//   const handlePayment = async () => {
-//     const transactionId = `TXN${Date.now()}`;
-//     console.log(transactionId, amount, "kkkkkkkkkkkk");
+    //   const handlePayment = async () => {
+    //     const transactionId = `TXN${Date.now()}`;
+    //     console.log(transactionId, amount, "kkkkkkkkkkkk");
 
-//     try {
-//         const response = await axios.post("https://bijoligrill.co/wp-json/custom-phonepe/v1/initiate/", {
-//             amount: amount
-           
-//         });
+    //     try {
+    //         const response = await axios.post("https://bijoligrill.co/wp-json/custom-phonepe/v1/initiate/", {
+    //             amount: amount
 
-//         console.log(response, "kkkkkkkkk");
+    //         });
 
-//         if (response?.data) {
-//             console.log("hiiiiiiiiiii");
-//             // Directly redirect to the URL from response.data
-//             const url = response.data;
-//             window.location.href = url;
-//         } else {
-//             toastError("Payment failed");
-//             window.location.reload()
-//            window.location.href = "/";
-//         }
-//     } catch (error) {
-//         console.error("Error:", error.message);
-//         toastError("Payment failed");
-//     }
-// };
-// const handlePayment = async () => {
-//     // const transactionId = TXN${Date.now()};
-//       const transactionId = `TXN${Date.now()}`;
-//     console.log(transactionId, amount, "kkkkkkkkkkkk");
+    //         console.log(response, "kkkkkkkkk");
 
-//     try {
-//         const response = await axios.post("https://bijoligrill.co/wp-json/custom-phonepe/v1/initiate/", {
-//             amount: amount
-//         });
+    //         if (response?.data) {
+    //             console.log("hiiiiiiiiiii");
+    //             // Directly redirect to the URL from response.data
+    //             const url = response.data;
+    //             window.location.href = url;
+    //         } else {
+    //             toastError("Payment failed");
+    //             window.location.reload()
+    //            window.location.href = "/";
+    //         }
+    //     } catch (error) {
+    //         console.error("Error:", error.message);
+    //         toastError("Payment failed");
+    //     }
+    // };
+    // const handlePayment = async () => {
+    //     // const transactionId = TXN${Date.now()};
+    //       const transactionId = `TXN${Date.now()}`;
+    //     console.log(transactionId, amount, "kkkkkkkkkkkk");
 
-//         console.log(response.data, "response from WordPress");
+    //     try {
+    //         const response = await axios.post("https://bijoligrill.co/wp-json/custom-phonepe/v1/initiate/", {
+    //             amount: amount
+    //         });
 
-//         if (response?.data?.success && response.data.redirect_url) {
-//             // Redirect user to PhonePe payment page
-//             window.location.href = response.data.redirect_url;
-//         } else {
-//             toastError("Payment failed");
-//             window.location.reload();
-//         }
-//     } catch (error) {
-//         console.error("Error:", error.message);
-//         toastError("Payment failed");
-//     }
-// };
+    //         console.log(response.data, "response from WordPress");
+
+    //         if (response?.data?.success && response.data.redirect_url) {
+    //             // Redirect user to PhonePe payment page
+    //             window.location.href = response.data.redirect_url;
+    //         } else {
+    //             toastError("Payment failed");
+    //             window.location.reload();
+    //         }
+    //     } catch (error) {
+    //         console.error("Error:", error.message);
+    //         toastError("Payment failed");
+    //     }
+    // };
 
 
     //   function ends here
@@ -370,13 +371,31 @@ const handlePayment = async () => {
                     onChange={(e) => setAmount(e.target.value)}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-purple-500"
                 />
-            </div> 
+            </div>
             <button
                 onClick={handlePayment}
                 className="w-full bg-blue-600 text-white py-2 rounded-md bg-blue-600 transition duration-300"
             >
                 Pay with PhonePe
             </button>
+            {/* qr page */}
+            <div className="max-w-xl mx-auto m-10 space-y-4">
+                {/* Pay QR Code */}
+                <div className="flex items-center">
+                    <label className="w-40 font-bold text-gray-700">Pay QR Code:</label>
+                    <span className="text-gray-900">
+
+                        <img className='w-[14rem]' src={qr_Code } alt="" />
+                    </span>
+                </div>
+
+                {/* Pay UPI */}
+                <div className="flex items-center">
+                    <label className="w-40 font-bold text-gray-700">Pay UPI:</label>
+                    <span className="text-gray-900">boim-407011110235@boi</span>
+                </div>
+            </div>
+
         </div>
     );
 
