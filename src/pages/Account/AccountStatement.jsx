@@ -17,6 +17,8 @@ function AccountStatement() {
     const [selectedDataSource, setSelectedDataSource] = useState("");
     const [filteredData, setFilteredData] = useState([]);
     const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
+    const [userId, setUserId] = useState("")
+
     const baseUrl = `${import.meta.env.VITE_BASE_URL}${import.meta.env.VITE_ACCOUNT_STATEMENT}`;
 
     const { data: AccountStatement, isLoading, isError, refetch } = useQuery(
@@ -110,13 +112,15 @@ function AccountStatement() {
 
     // handel payement function for phonepe
 
+    // https://bijoligrill.co/initiate-payment/?amount=1&user_id=3423423
+
     const handlePayment = async () => {
         const transactionId = `TXN${Date.now()}`;
         console.log(transactionId, amount, "Initiating payment...");
 
         try {
             // Hit the API using GET with amount in query
-            const url = `https://bijoligrill.co/initiate-payment/?amount=${amount}`;
+            const url = `https://bijoligrill.co/initiate-payment/?amount=${amount}&user_id=${userId}`;
             window.location.href = url; // let the browser handle it directly
 
         } catch (error) {
@@ -182,6 +186,13 @@ function AccountStatement() {
 
 
     //   function ends here
+
+    // For Use Id
+    useEffect(() => {
+    const id = localStorage.getItem("user_id");
+    setUserId(id);
+    console.log(id, "from ac statement"); // logs correct value
+}, []);
 
     useEffect(() => {
         if (AccountStatement?.data) {

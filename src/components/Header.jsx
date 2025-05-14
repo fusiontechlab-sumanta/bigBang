@@ -198,6 +198,14 @@ function Header() {
     const userPoints = pointBalance?.data
     // console.log(isLoading, "tttttttttttttttttt");
 
+     useEffect(() => {
+        if (pointBalance && pointBalance.user_id) {
+            localStorage.setItem("user_id", pointBalance.user_id);
+            console.log("User ID stored in localStorage:", pointBalance.user_id);
+        }
+    }, [pointBalance]);
+
+
     const [showWarningModal, setShowWarningModal] = useState(false);
 
     // Handle Login button click on small devices
