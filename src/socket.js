@@ -1,7 +1,7 @@
 import io from 'socket.io-client';
 import { toastWarn } from './utils/notifyCustom';
 
-const socket = io('https://api.toxy.lives', {
+const socket = io('https://api.toxy.live', {
     transports: ['websocket'], // Force WebSocket transport
 });
 // const socket = io.connect('https://toxy.live',);
