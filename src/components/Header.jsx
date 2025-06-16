@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import logo from '../assets/logo.jpeg'
 import logo1 from '../assets/logo1.png'
+import logo2 from '../assets/logobigbbang.png'
 import { CiLogin } from "react-icons/ci";
 import { FaSearchPlus } from "react-icons/fa";
 import { Link, useLocation, useParams } from 'react-router-dom';
@@ -317,7 +318,7 @@ function Header() {
                                 <img src={logo1} alt="Mobile Logo" className="w-5 h-5 mr-2" />
                                 Bets
                             </button> : <Link to="/" className="flex items-center lg:ms-4">
-                                <img src={logo} alt="Logo" className=" h-20 w-[100px]" />
+                                <img src={logo2} alt="Logo" className=" h-20 w-[100px]" />
                             </Link>}
 
                             {/* <button onClick={showLiveBets} style={{ "width": "100px" }} className="flex md:hidden items-center bg-[rgb(16 74 99)] hover:bg-[#102b3f] text-white font-bold py-1 px-3 rounded-md shadow-md border-t border-white/50">
@@ -333,7 +334,7 @@ function Header() {
 
                     ) : (
                         <Link to="/" className="flex items-center lg:ms-4">
-                            <img src={logo} alt="Logo" className="hidden md:block h-20 w-[100px]" />
+                            <img src={logo2} alt="Logo" className="hidden md:block h-20 w-[100px]" />
                         </Link>
                     )}
 
