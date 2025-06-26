@@ -23,6 +23,7 @@ import './socket'
 import socket from './socket';
 import Success from './pages/Success';
 import Failure from './pages/Failure';
+import PiratBay from './pages/Casino/PiratBay';
 
 
 const queryClient = new QueryClient();
@@ -182,6 +183,7 @@ function App() {
                   <Route path="/Andarbahar" element={<Andarbahar />} />
                   <Route path="/CasinoTeen20" element={<CasinoTeen20 />} />
                   <Route path="/Card32" element={<Card32 />} />
+                  <Route path="/PiratBay" element={<PiratBay />} />
 
                   <Route path="/lottery/5556" element={<LotteryDetail />} />
                   <Route path="/setting" element={<SettingsPage />} />
