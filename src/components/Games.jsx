@@ -299,7 +299,7 @@ function Games() {
               if (priorityIndex === 20) customRoute = "/PiratBay";
               if (priorityIndex === 15) customRoute = "/Jackpot";
               if (priorityIndex === 13) customRoute = "/Slotmachine";
-              if (priorityIndex === 5) customRoute = "//Andarbahar";
+              if (priorityIndex === 5) customRoute = "/Andarbahar";
               else if (priorityIndex === 7) customRoute = "/casinoTeen20";
               else if (priorityIndex === 2) customRoute = "/Card32";
 
