@@ -25,6 +25,7 @@ import Success from './pages/Success';
 import Failure from './pages/Failure';
 import PiratBay from './pages/Casino/PiratBay';
 import Jackpot from './pages/Casino/Jackpot';
+import Slotmachine from './pages/Casino/Slotmachine';
 
 
 const queryClient = new QueryClient();
@@ -186,6 +187,7 @@ function App() {
                   <Route path="/Card32" element={<Card32 />} />
                   <Route path="/PiratBay" element={<PiratBay />} />
                   <Route path="/Jackpot" element={<Jackpot />} />
+                  <Route path="/Slotmachine" element={<Slotmachine />} />
 
                   <Route path="/lottery/5556" element={<LotteryDetail />} />
                   <Route path="/setting" element={<SettingsPage />} />
