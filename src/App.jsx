@@ -26,7 +26,8 @@ import Failure from './pages/Failure';
 import PiratBay from './pages/Casino/PiratBay';
 import Jackpot from './pages/Casino/Jackpot';
 import Slotmachine from './pages/Casino/Slotmachine';
-import Slot4game from './pages/Casino/Slot4game';
+import Slot4game from './pages/Casino/ChristmasSlot';
+import ChristmasSlot from './pages/Casino/ChristmasSlot';
 
 
 const queryClient = new QueryClient();
@@ -189,7 +190,7 @@ function App() {
                   <Route path="/PiratBay" element={<PiratBay />} />
                   <Route path="/Jackpot" element={<Jackpot />} />
                   <Route path="/Slotmachine" element={<Slotmachine />} />
-                  <Route path="/Slot4game" element={<Slot4game />} />
+                  <Route path="/ChristmasSlot" element={<ChristmasSlot />} />
 
                   <Route path="/lottery/5556" element={<LotteryDetail />} />
                   <Route path="/setting" element={<SettingsPage />} />

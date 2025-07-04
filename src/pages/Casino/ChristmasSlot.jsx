@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-const Slot4game = () => {
+const ChristmasSlot = () => {
 
   useEffect(() => {
     const userId = localStorage.getItem("user_id");
@@ -15,4 +15,4 @@ const Slot4game = () => {
   return <div>Redirecting...</div>;
 };
 
-export default Slot4game;
+export default ChristmasSlot;
