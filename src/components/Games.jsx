@@ -288,7 +288,7 @@ function Games() {
         >
           <div className="w-full grid grid-cols-4 max-lg:grid-cols-3 gap-3 p-3 uppercase bg-opacity-50 bg-gray-400">
             {/* Priority Indexes: 5, 7, 2 */}
-            {[20, 15, 13, 22, 5, 7, 2].map((priorityIndex) => {
+            {[21, 16, 14, 8, 5, 7, 2].map((priorityIndex) => {
               const [imagePath, imageSrc] =
                 Object.entries(images)[priorityIndex];
               const imageName = imagePath.split("/").pop().split(".")[0];
@@ -296,10 +296,10 @@ function Games() {
                 typeof imageSrc === "string" ? imageSrc : imageSrc.default;
               // Define custom routes for priority images
               let customRoute = "/casino";
-              if (priorityIndex === 20) customRoute = "/PiratBay";
-              if (priorityIndex === 15) customRoute = "/Jackpot";
-              if (priorityIndex === 13) customRoute = "/Slotmachine";
-              if (priorityIndex === 22) customRoute = "/Slot4game";
+              if (priorityIndex === 21) customRoute = "/PiratBay";
+              if (priorityIndex === 16) customRoute = "/Jackpot";
+              if (priorityIndex === 14) customRoute = "/Slotmachine";
+              if (priorityIndex === 8) customRoute = "/Slot4game";
               if (priorityIndex === 5) customRoute = "/Andarbahar";
               else if (priorityIndex === 7) customRoute = "/casinoTeen20";
               else if (priorityIndex === 2) customRoute = "/Card32";
@@ -332,7 +332,7 @@ function Games() {
             {/* Other Indexes */}
             {Object.entries(images).map(([imagePath, imageSrc], index) => {
               // Skip priority indexes
-              if ([20, 15, 13, 22, 5, 7, 2].includes(index)) return null;
+              if ([21, 16, 14, 8, 5, 7, 2].includes(index)) return null;
               const imageName = imagePath.split("/").pop().split(".")[0];
               const imageUrl =
                 typeof imageSrc === "string" ? imageSrc : imageSrc.default;
