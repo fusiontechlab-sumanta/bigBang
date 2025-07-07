@@ -184,6 +184,57 @@ function Games() {
   const activeGame = GamesList.find((game) => game.active == true);
   const activeGameItems = gameItemList[activeGame.game] || [];
 
+ const orderedImageNames = [
+  "20-20 Dragon Tiger",
+  "29 Baccarat",
+  "32 cards",
+  "32Cards",
+  "Abevolution Gaming1",
+  "abevolution gaming",
+  "abevolution Gaming",
+  "AndarBahar",
+  "AndarBahar3",
+  "Casino Teen 20",
+  "ChristMas Slot",
+  "Dragon-Tiger",
+  "DTL",
+  "Ezugi-min",
+  "Fast Dragon-Tiger",
+  "Fast lucky7",
+  "Football slot",
+  "I Day TeenPatti",
+  "Jackpot",
+  "Joker Teen Patti",
+  "LUCKY7-A",
+  "LUCKY7-B",
+  "MUFLISTEENPATTI",
+  "PiratBay",
+  "Point Teen Patti",
+  "poker",
+  "Teen Patti",
+  "TEENPATTI"
+];
+
+// Convert the glob result to a usable image array
+const imageList = Object.entries(images).map(([path, image]) => {
+  const name = path.split('/').pop().split('.')[0];
+  return { name, src: typeof image === 'string' ? image : image.default };
+});
+
+console.log("Loaded image names:", imageList.map(img => img.name));
+
+
+// Filter and sort images based on `orderedImageNames`
+const orderedImages = orderedImageNames
+  .map(name => {
+    const image = imageList.find(img => img.name === name); // Strict match
+    if (!image) console.warn(`Image not found for: "${name}"`);
+    return image ? { ...image, label: name.toUpperCase() } : null;
+  })
+  .filter(Boolean); // Remove undefined if any image name doesn't match
+
+
+  
   const handleItemClick = (index) => {
     if (ulRef.current) {
       const scrollAmount = 100; // Adjust this value based on your needs (distance to scroll per click)
@@ -229,6 +280,8 @@ function Games() {
             ))}
           </ul>
         </div>
+
+        
         <div className="uppercase text-sm font-semibold relative">
           {activeGameItems?.length > 0 && (
             <ul
@@ -238,43 +291,51 @@ function Games() {
                   : "justify-between gap-4" // Spacing for multiple items
               }`}
             >
-              {activeGameItems.map((item, key) => (
-                <li
-                  key={key}
-                  className={`${
-                    item.active
-                      ? "text-black bg-gradient-to-t from-[#9DD75C] to-[#52A124] rounded-t-md px-2 pb-2"
-                      : "text-white"
-                  } text-nowrap  cursor-pointer ${
-                    activeGameItems.length === 1
-                      ? "w-full text-center py-2 mr-10"
-                      : ""
-                  }`}
-                >
-                  {item.name}
-                </li>
-              ))}
-              <div className="absolute flex right-2 bottom-1  items-center">
-                <div className={` flex bg-white rounded-full items-center`}>
-                  <div
-                    className={`transition-all duration-300 ease-in-out ${
-                      showSearch ? "w-48 opacity-100 " : "w-0 opacity-0"
-                    } overflow-hidden`}
-                  >
-                    <input
-                      type="text"
-                      className="border border-gray-300 rounded px-2 py-1 w-full"
-                      placeholder="Search games..."
-                    />
-                  </div>
-                  <button
-                    className="text-white bg-gradient-to-t from-[#9DD75C] to-[#52A124] p-2 rounded-full"
-                    onClick={handleSearchToggle}
-                  >
-                    <BiSearch />
-                  </button>
-                </div>
-              </div>
+
+           <div className="flex justify-between w-full">
+  {/* Scrollable game list */}
+  <div className="overflow-x-auto">
+    <ul className="flex space-x-4 whitespace-nowrap px-4">
+      {activeGameItems.map((item, key) => (
+        <li
+          key={key}
+          className={`cursor-pointer px-3 py-2 rounded-t-md ${
+            item.active
+              ? "text-black bg-gradient-to-t from-[#9DD75C] to-[#52A124]"
+              : "text-white"
+          }`}
+        >
+          {item.name}
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  {/* Fixed search bar - doesn't scroll with list */}
+  <div className="relative right-2 bottom-1 flex items-center z-10 ml-4">
+    <div className="flex bg-white rounded-full items-center transition-all duration-300">
+      <div
+        className={`overflow-hidden transition-all duration-300 ease-in-out ${
+          showSearch ? "w-48 opacity-100 mr-2" : "w-0 opacity-0"
+        }`}
+      >
+        <input
+          type="text"
+          className="border border-gray-300 border-r-0 rounded px-2 py-1 w-full"
+          placeholder="Search games..."
+        />
+      </div>
+      <button
+        className="text-white bg-gradient-to-t from-[#9DD75C] to-[#52A124] p-2 rounded-full"
+        onClick={handleSearchToggle}
+      >
+        <BiSearch />
+      </button>
+    </div>
+  </div>
+</div>
+
+              
             </ul>
           )}
         </div>
@@ -321,7 +382,7 @@ function Games() {
                   </div>
                   {/* Text */}
                   <div className="w-full text-black font-bold p-2 bg-gradient-to-t from-[#9DD75C] to-[#52A124] text-center leading-tight break-words">
-                    <span className="block text-[clamp(8px,2.5vw,14px)] max-w-full break-words">
+                    <span className="block text-[clamp(8px,2.5vw,12px)] max-w-full break-words">
                       {imageName}
                     </span>
                   </div>
@@ -354,7 +415,7 @@ function Games() {
                   </div>
                   {/* Text */}
                   <div className="w-full text-black font-bold p-2 bg-gradient-to-t from-[#9DD75C] to-[#52A124] text-center leading-tight break-words">
-                    <span className="block text-[clamp(8px,2.5vw,14px)] max-w-full break-words">
+                    <span className="block text-[clamp(8px,2.5vw,12px)] max-w-full break-words">
                       {imageName}
                     </span>
                   </div>
